@@ -1,31 +1,20 @@
 ﻿@using Microsoft.Owin.Security
 @model RM.Architecture.Identity.Infra.CrossCuting.Identity.Model.ExternalLoginListViewModel
 <h4>Utilize uma conta para login.</h4>
-<hr/>
+<hr />
 @{
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
-    if (!loginProviders.Any())
+
+    using (Html.BeginForm("ExternalLogin", "Account", new { Model.ReturnUrl }))
     {
-        <div>
+        @Html.AntiForgeryToken()
+        <div id="socialLoginList">
             <p>
-                There are no external authentication services configured. See <a href="http://go.microsoft.com/fwlink/?LinkId=313242">this article</a>
-                for details on setting up this ASP.NET application to support logging in via external services.
+                @foreach (var p in loginProviders)
+                {
+                    <button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+                }
             </p>
         </div>
-    }
-    else
-    {
-        using (Html.BeginForm("ExternalLogin", "Account", new {Model.ReturnUrl}))
-        {
-            @Html.AntiForgeryToken()
-            <div id="socialLoginList">
-                <p>
-                    @foreach (var p in loginProviders)
-                    {
-                        <button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
-                    }
-                </p>
-            </div>
-        }
     }
 }

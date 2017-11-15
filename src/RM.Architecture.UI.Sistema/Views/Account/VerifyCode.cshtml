@@ -8,9 +8,6 @@
     @Html.AntiForgeryToken()
     @Html.ValidationSummary("", new {@class = "text-danger"})
     @Html.Hidden("provider", Model.Provider)
-    <h4>
-        @ViewBag.Status <a href="#" title="@ViewBag.CodigoAcesso">Passe o Mouse :)</a>
-    </h4>
     <hr/>
     <div class="form-group">
         @Html.LabelFor(m => m.Code, new {@class = "col-md-2 control-label"})

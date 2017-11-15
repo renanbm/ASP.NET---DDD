@@ -85,15 +85,9 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl, string userId)
         {
-            // Requer que o usuario já tenha feito um login por senha.
             if (!await _signInManager.HasBeenVerifiedAsync())
                 return View("Error");
-            var user = await _userManager.FindByIdAsync(await _signInManager.GetVerifiedUserIdAsync());
-            if (user != null)
-            {
-                ViewBag.Status = "DEMO: Caso o código não chegue via " + provider + " o código é: ";
-                ViewBag.CodigoAcesso = await _userManager.GenerateTwoFactorTokenAsync(user.Id, provider);
-            }
+
             return View(new VerifyCodeViewModel {Provider = provider, ReturnUrl = returnUrl, UserId = userId});
         }
 
@@ -176,17 +170,18 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (!ModelState.IsValid) return View(model);
 
             var user = await _userManager.FindByNameAsync(model.Email);
+
             if (user == null || !await _userManager.IsEmailConfirmedAsync(user.Id))
                 return View("ForgotPasswordConfirmation");
 
             var code = await _userManager.GeneratePasswordResetTokenAsync(user.Id);
-            var callbackUrl = Url.Action("ResetPassword", "Account", new {userId = user.Id, code},
-                Request.Url.Scheme);
-            await _userManager.SendEmailAsync(user.Id, "Esqueci minha senha",
-                "Por favor altere sua senha clicando aqui: <a href='" + callbackUrl + "'></a>");
+
+            var callbackUrl = Url.Action("ResetPassword", "Account", new {userId = user.Id, code}, Request.Url?.Scheme);
+
+            await _userManager.SendEmailAsync(user.Id, "Esqueci minha senha", "Por favor altere sua senha clicando aqui: <a href='" + callbackUrl + "'></a>");
+
             ViewBag.Link = callbackUrl;
-            ViewBag.Status = "DEMO: Caso o link não chegue: ";
-            ViewBag.LinkAcesso = callbackUrl;
+            
             return View("ForgotPasswordConfirmation");
         }
 

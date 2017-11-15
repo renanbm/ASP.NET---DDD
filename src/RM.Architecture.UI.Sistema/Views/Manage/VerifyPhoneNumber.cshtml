@@ -8,10 +8,6 @@
     @Html.AntiForgeryToken()
     @Html.Hidden("phoneNumber", Model.PhoneNumber)
     <h4>Digite seu código de segurança.</h4>
-    <h4>
-        @ViewBag.Status <a href="#" title="@ViewBag.CodigoAcesso">Passe o Mouse :)</a>
-    </h4>
-    <hr/>
     @Html.ValidationSummary("", new {@class = "text-danger"})
     <div class="form-group">
         @Html.LabelFor(m => m.Code, new {@class = "col-md-2 control-label"})

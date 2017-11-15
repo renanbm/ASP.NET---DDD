@@ -159,18 +159,9 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
         //
         // GET: /Account/VerifyPhoneNumber
-        public async Task<ActionResult> VerifyPhoneNumber(string phoneNumber)
+        public ActionResult VerifyPhoneNumber(string phoneNumber)
         {
-            // This code allows you exercise the flow without actually sending codes
-            // For production use please register a SMS provider in IdentityConfig and generate a code here.
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), phoneNumber);
-
-            ViewBag.Status = "DEMO: Caso o código não chegue via SMS o código é: ";
-            ViewBag.CodigoAcesso = code;
-
-            return phoneNumber == null
-                ? View("Error")
-                : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
+            return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
         //
