@@ -1,0 +1,1 @@
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="RM.Architecture.Filiacao.Services.REST.FiliacaoAPI.WebApiApplication" Language="C#" %>

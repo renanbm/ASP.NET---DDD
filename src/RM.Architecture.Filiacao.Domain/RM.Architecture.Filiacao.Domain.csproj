@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{473C58A6-8D02-42B3-AB3A-93CA0D146EA6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RM.Architecture.Filiacao.Domain</RootNamespace>
+    <AssemblyName>RM.Architecture.Filiacao.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DomainValidation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\DomainValidation.1.0.0\lib\net453\DomainValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\Cliente\ClienteEstrangeiro.cs" />
+    <Compile Include="Entities\Cliente\ClientePessoaFisica.cs" />
+    <Compile Include="Entities\Cliente\ClientePessoaJuridica.cs" />
+    <Compile Include="Entities\Endereco\Endereco.cs" />
+    <Compile Include="Entities\Cliente\Cliente.cs" />
+    <Compile Include="Entities\Usuario\Usuario.cs" />
+    <Compile Include="Enum\EnumSexo.cs" />
+    <Compile Include="Enum\EnumTipoPessoa.cs" />
+    <Compile Include="Interfaces\Repository\IBaseRepository.cs" />
+    <Compile Include="Interfaces\Repository\IClienteRepository.cs" />
+    <Compile Include="Interfaces\Repository\IEnderecoRepository.cs" />
+    <Compile Include="Interfaces\Services\IFiliacaoService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\FiliacaoService.cs" />
+    <Compile Include="Specifications\Cliente\ClienteDevePossuirEmailUnicoSpecification.cs" />
+    <Compile Include="Specifications\Cliente\ClienteDevePossuirCpfUnicoSpecification.cs" />
+    <Compile Include="Specifications\Cliente\ClienteDeveSerMaiorDeIdadeSpecification.cs" />
+    <Compile Include="Specifications\Cliente\ClienteDeveTerCpfValidoSpecification.cs" />
+    <Compile Include="Specifications\Cliente\ClienteDeveTerEmailValidoSpecification.cs" />
+    <Compile Include="Specifications\Cliente\ClienteDeveTerUmEnderecoSpecification.cs" />
+    <Compile Include="Validations\Cliente\ClienteAptoParaCadastroValidation.cs" />
+    <Compile Include="Validations\Cliente\ClienteEstaConsistenteValidation.cs" />
+    <Compile Include="Value Objects\Endereco\Cidade.cs" />
+    <Compile Include="Value Objects\Documentos\Cnpj.cs" />
+    <Compile Include="Value Objects\Documentos\Cpf.cs" />
+    <Compile Include="Value Objects\Email.cs" />
+    <Compile Include="Value Objects\Endereco\Estado.cs" />
+    <Compile Include="Value Objects\Endereco\Pais.cs" />
+    <Compile Include="Value Objects\Documentos\Passaporte.cs" />
+    <Compile Include="Value Objects\RepresentanteEmpresa.cs" />
+    <Compile Include="Value Objects\Documentos\Rg.cs" />
+    <Compile Include="Value Objects\Sexo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

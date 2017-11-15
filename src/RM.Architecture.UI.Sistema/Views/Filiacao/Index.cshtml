@@ -1,0 +1,59 @@
+﻿@using RM.Architecture.UI.Sistema.Helpers
+@model IEnumerable<RM.Architecture.Filiacao.Application.ViewModels.ClienteViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@{
+    if (this.IfClaim("ModuloFiliacao", "FI"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "Create")
+        </p>
+    }
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Cpf)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DataNascimento)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cpf)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataNascimento)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new {id = item.CodCliente}).IfClaimHelper("ModuloFiliacao", "FE") |
+                @Html.ActionLink("Details", "Details", new {id = item.CodCliente}).IfClaimHelper("ModuloFiliacao", "FD") |
+                @Html.ActionLink("Delete", "Delete", new {id = item.CodCliente}).IfClaimHelper("ModuloFiliacao", "FX")
+            </td>
+        </tr>
+    }
+
+</table>
