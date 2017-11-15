@@ -35,7 +35,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
 
             // Adicionando Claims externos capturados no login
             if (ext != null)
-                await SetExternalProperties(userIdentity, ext);
+                SetExternalProperties(userIdentity, ext);
 
             // Gerenciamento de Claims para informaçoes do usuario
             //claims.Add(new Claim("AdmRoles", "True"));
@@ -45,17 +45,17 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
             return userIdentity;
         }
 
-        private async Task SetExternalProperties(ClaimsIdentity identity, ClaimsIdentity ext)
+        private static void SetExternalProperties(ClaimsIdentity identity, ClaimsIdentity ext)
         {
-            if (ext != null)
-            {
-                var ignoreClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims";
-                // Adicionando Claims Externos no Identity
-                foreach (var c in ext.Claims)
-                    if (!c.Type.StartsWith(ignoreClaim))
-                        if (!identity.HasClaim(c.Type, c.Value))
-                            identity.AddClaim(c);
-            }
+            if (ext == null) return;
+
+            const string ignoreClaim = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims";
+
+            // Adicionando Claims Externos no Identity
+            foreach (var c in ext.Claims)
+                if (!c.Type.StartsWith(ignoreClaim))
+                    if (!identity.HasClaim(c.Type, c.Value))
+                        identity.AddClaim(c);
         }
     }
 }

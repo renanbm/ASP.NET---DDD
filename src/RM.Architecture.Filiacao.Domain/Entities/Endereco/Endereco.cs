@@ -1,5 +1,4 @@
 using System;
-using RM.Architecture.Filiacao.Domain.Value_Objects.Endereco;
 
 namespace RM.Architecture.Filiacao.Domain.Entities.Endereco
 {

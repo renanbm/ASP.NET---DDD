@@ -20,12 +20,12 @@ namespace RM.Architecture.Filiacao.Domain.Entities.Cliente
 
         public Passaporte Passaporte { get; set; }
 
-        //public override int ObterTipoPessoa()
-        //{
-        //    return (int)EnumTipoPessoa.Estrangeira;
-        //}
-
         //public override string ObterNome()
+        //}
+        //    return (int)EnumTipoPessoa.Estrangeira;
+        //{
+
+        //public override int ObterTipoPessoa()
         //{
         //    return Nome;
         //}

@@ -41,22 +41,22 @@ namespace RM.Architecture.Filiacao.Domain.Entities.Cliente
             return ValidationResult.IsValid;
         }
 
-        //protected Cliente()
-        //{
-        //    CodCliente = Guid.NewGuid();
-        //    Enderecos = new List<Endereco.Endereco>();
-        //    Email = new Email();
-        //}
-
-        //public Guid CodCliente { get; set; }
-
-        //public int CodTipoPessoa { get; set; }
-
-        //public Email Email { get; set; }
+        //public virtual ICollection<Endereco.Endereco> Enderecos { get; set; }
 
         //public DateTime DataCadastro { get; set; }
 
-        //public virtual ICollection<Endereco.Endereco> Enderecos { get; set; }
+        //public Email Email { get; set; }
+
+        //public int CodTipoPessoa { get; set; }
+
+        //public Guid CodCliente { get; set; }
+        //}
+        //    Email = new Email();
+        //    Enderecos = new List<Endereco.Endereco>();
+        //    CodCliente = Guid.NewGuid();
+        //{
+
+        //protected Cliente()
 
         //public bool Ativo { get; set; }
 

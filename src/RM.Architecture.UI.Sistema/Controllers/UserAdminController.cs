@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity.Owin;
 using RM.Architecture.Core.Infra.CrossCutting.MvcFilters;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
@@ -20,7 +16,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             private readonly ApplicationRoleManager _roleManager;
             private readonly ApplicationUserManager _userManager;
-            
+
             public UsersAdminController(ApplicationRoleManager roleManager, ApplicationUserManager userManager)
             {
                 _roleManager = roleManager;
@@ -39,9 +35,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             public async Task<ActionResult> Details(string id)
             {
                 if (id == null)
-                {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
                 var user = await _userManager.FindByIdAsync(id);
 
                 ViewBag.RoleNames = await _userManager.GetRolesAsync(user.Id);
@@ -66,7 +60,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var user = new ApplicationUser { UserName = userViewModel.Email, Email = userViewModel.Email };
+                    var user = new ApplicationUser {UserName = userViewModel.Email, Email = userViewModel.Email};
                     var adminresult = await _userManager.CreateAsync(user, userViewModel.Password);
 
                     //Add User to the selected Roles 
@@ -88,7 +82,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
                         ModelState.AddModelError("", adminresult.Errors.First());
                         ViewBag.RoleId = new SelectList(_roleManager.Roles, "Name", "Name");
                         return View();
-
                     }
                     return RedirectToAction("Index");
                 }
@@ -101,22 +94,18 @@ namespace RM.Architecture.UI.Sistema.Controllers
             public async Task<ActionResult> Edit(string id)
             {
                 if (id == null)
-                {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
                 var user = await _userManager.FindByIdAsync(id);
                 if (user == null)
-                {
                     return HttpNotFound();
-                }
 
                 var userRoles = await _userManager.GetRolesAsync(user.Id);
 
-                return View(new EditUserViewModel()
+                return View(new EditUserViewModel
                 {
                     Id = user.Id,
                     Email = user.Email,
-                    RolesList = _roleManager.Roles.ToList().Select(x => new SelectListItem()
+                    RolesList = _roleManager.Roles.ToList().Select(x => new SelectListItem
                     {
                         Selected = userRoles.Contains(x.Name),
                         Text = x.Name,
@@ -129,15 +118,14 @@ namespace RM.Architecture.UI.Sistema.Controllers
             // POST: /Users/Edit/5
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<ActionResult> Edit([Bind(Include = "Email,Id")] EditUserViewModel editUser, params string[] selectedRole)
+            public async Task<ActionResult> Edit([Bind(Include = "Email,Id")] EditUserViewModel editUser,
+                params string[] selectedRole)
             {
                 if (ModelState.IsValid)
                 {
                     var user = await _userManager.FindByIdAsync(editUser.Id);
                     if (user == null)
-                    {
                         return HttpNotFound();
-                    }
 
                     user.UserName = editUser.Email;
                     user.Email = editUser.Email;
@@ -146,14 +134,14 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
                     selectedRole = selectedRole ?? new string[] { };
 
-                    var result = await _userManager.AddToRolesAsync(user.Id, selectedRole.Except(userRoles).ToArray<string>());
+                    var result = await _userManager.AddToRolesAsync(user.Id, selectedRole.Except(userRoles).ToArray());
 
                     if (!result.Succeeded)
                     {
                         ModelState.AddModelError("", result.Errors.First());
                         return View();
                     }
-                    result = await _userManager.RemoveFromRolesAsync(user.Id, userRoles.Except(selectedRole).ToArray<string>());
+                    result = await _userManager.RemoveFromRolesAsync(user.Id, userRoles.Except(selectedRole).ToArray());
 
                     if (!result.Succeeded)
                     {
@@ -171,35 +159,28 @@ namespace RM.Architecture.UI.Sistema.Controllers
             public async Task<ActionResult> Delete(string id)
             {
                 if (id == null)
-                {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
                 var user = await _userManager.FindByIdAsync(id);
                 if (user == null)
-                {
                     return HttpNotFound();
-                }
                 return View(user);
             }
 
             //
             // POST: /Users/Delete/5
-            [HttpPost, ActionName("Delete")]
+            [HttpPost]
+            [ActionName("Delete")]
             [ValidateAntiForgeryToken]
             public async Task<ActionResult> DeleteConfirmed(string id)
             {
                 if (ModelState.IsValid)
                 {
                     if (id == null)
-                    {
                         return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                    }
 
                     var user = await _userManager.FindByIdAsync(id);
                     if (user == null)
-                    {
                         return HttpNotFound();
-                    }
                     var result = await _userManager.DeleteAsync(user);
                     if (!result.Succeeded)
                     {

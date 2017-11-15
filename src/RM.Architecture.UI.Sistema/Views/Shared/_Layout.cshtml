@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8"/>
@@ -30,7 +31,7 @@
                             <li>@Html.ActionLink("Admin Roles", "Index", "RolesAdmin")</li>
                         }
 
-                        var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+                        var claimsIdentity = User.Identity as ClaimsIdentity;
                         var claim = claimsIdentity.FindFirst(c => c.Type == "AdmUsers");
 
                         if (claim != null)
@@ -50,7 +51,6 @@
                             }
                         }
                     }
-
                 }
             </ul>
             @Html.Partial("_LoginPartial")

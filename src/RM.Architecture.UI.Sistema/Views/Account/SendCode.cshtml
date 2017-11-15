@@ -3,7 +3,7 @@
     ViewBag.Title = "Enviar código de verificação";
 }
 <h2>@ViewBag.Title.</h2>
-@using (Html.BeginForm("SendCode", "Account", new { ReturnUrl = Model.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("SendCode", "Account", new {Model.ReturnUrl}, FormMethod.Post, new {@class = "form-horizontal", role = "form"}))
 {
     @Html.AntiForgeryToken()
     <div class="row">
@@ -11,7 +11,7 @@
             Provedor de Two Factor Authentication:
             @Html.DropDownListFor(model => model.SelectedProvider, Model.Providers)
             @Html.HiddenFor(m => m.UserId)
-            <input type="submit" value="Enviar" class="btn btn-default" />
+            <input type="submit" value="Enviar" class="btn btn-default"/>
         </div>
     </div>
 }

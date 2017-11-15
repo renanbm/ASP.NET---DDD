@@ -14,7 +14,8 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.IoC
         public static void RegisterServices(Container container)
         {
             container.Register<ApplicationDbContext>(Lifestyle.Scoped);
-            container.Register<IUserStore<ApplicationUser>>(() => new UserStore<ApplicationUser>(new ApplicationDbContext()), Lifestyle.Scoped);
+            container.Register<IUserStore<ApplicationUser>>(
+                () => new UserStore<ApplicationUser>(new ApplicationDbContext()), Lifestyle.Scoped);
             container.Register<IRoleStore<IdentityRole, string>>(() => new RoleStore<IdentityRole>(), Lifestyle.Scoped);
             container.Register<ApplicationRoleManager>(Lifestyle.Scoped);
             container.Register<ApplicationUserManager>(Lifestyle.Scoped);

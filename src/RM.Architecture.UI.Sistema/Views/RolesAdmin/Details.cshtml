@@ -5,7 +5,7 @@
 <h2>Detalhes.</h2>
 <div>
     <h4>Roles.</h4>
-    <hr />
+    <hr/>
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Name)
@@ -18,7 +18,7 @@
 <h4>Lista de usuários nesta Role</h4>
 @if (ViewBag.UserCount == 0)
 {
-    <hr />
+    <hr/>
     <p>Nenhum usuário nesta Role.</p>
 }
 <table class="table">
@@ -32,7 +32,6 @@
     }
 </table>
 <p>
-    @Html.ActionLink("Editar", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Editar", "Edit", new {id = Model.Id}) |
     @Html.ActionLink("Voltar para a lista", "Index")
 </p>
-

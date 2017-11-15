@@ -20,14 +20,14 @@ namespace RM.Architecture.Filiacao.Domain.Entities.Cliente
         public string InscricaoEstadual { get; set; }
 
         public RepresentanteEmpresa RepresentanteEmpresa { get; set; }
-
-        //public override int ObterTipoPessoa()
         //{
-        //    return (int)EnumTipoPessoa.Juridica;
-        //}
 
         //public override string ObterNome()
+        //}
+        //    return (int)EnumTipoPessoa.Juridica;
         //{
+
+        //public override int ObterTipoPessoa()
         //    return NomeFantasia;
         //}
 

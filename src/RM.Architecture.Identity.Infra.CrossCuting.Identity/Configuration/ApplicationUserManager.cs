@@ -79,7 +79,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration
             var client = user.Clients.SingleOrDefault(c => c.ClientKey == clientKey);
             if (client == null)
             {
-                client = new Client { ClientKey = clientKey };
+                client = new Client {ClientKey = clientKey};
                 user.Clients.Add(client);
             }
 

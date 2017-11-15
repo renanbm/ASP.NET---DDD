@@ -1,8 +1,9 @@
+using System.Data.Entity.Migrations;
+using RM.Architecture.Identity.Infra.Data.Context;
+
 namespace RM.Architecture.Identity.Infra.Data.Migrations
 {
-    using System.Data.Entity.Migrations;
-
-    internal sealed class Configuration : DbMigrationsConfiguration<Context.IdentityContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<IdentityContext>
     {
         public Configuration()
         {
@@ -10,7 +11,7 @@ namespace RM.Architecture.Identity.Infra.Data.Migrations
             ContextKey = "RM.Architecture.Identity.Infra.Data.Context.IdentityContext";
         }
 
-        protected override void Seed(Context.IdentityContext context)
+        protected override void Seed(IdentityContext context)
         {
         }
     }

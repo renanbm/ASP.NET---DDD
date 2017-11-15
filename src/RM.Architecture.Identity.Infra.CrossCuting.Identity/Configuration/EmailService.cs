@@ -50,7 +50,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration
 
             var text = HttpUtility.HtmlEncode(message.Body);
 
-            var msg = new MailMessage { From = new MailAddress("admin@portal.com.br", "Admin do Portal") };
+            var msg = new MailMessage {From = new MailAddress("admin@portal.com.br", "Admin do Portal")};
             msg.To.Add(new MailAddress(message.Destination));
             msg.Subject = message.Subject;
             msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(text, null, MediaTypeNames.Text.Plain));

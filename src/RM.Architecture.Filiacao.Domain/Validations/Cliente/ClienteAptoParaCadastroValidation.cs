@@ -12,11 +12,11 @@ namespace RM.Architecture.Filiacao.Domain.Validations.Cliente
             var emailDuplicado = new ClienteDevePossuirEmailUnicoSpecification(clienteRepository);
             var clienteEndereco = new ClienteDeveTerUmEnderecoSpecification();
 
-            base.Add("cpfDuplicado",
+            Add("cpfDuplicado",
                 new Rule<Entities.Cliente.Cliente>(cpfDuplicado, "CPF já cadastrado! Esqueceu sua senha?"));
-            base.Add("emailDuplicado",
+            Add("emailDuplicado",
                 new Rule<Entities.Cliente.Cliente>(emailDuplicado, "E-mail já cadastrado! Esqueceu sua senha?"));
-            base.Add("clienteEndereco",
+            Add("clienteEndereco",
                 new Rule<Entities.Cliente.Cliente>(clienteEndereco, "Cliente não informou um endereço"));
         }
     }

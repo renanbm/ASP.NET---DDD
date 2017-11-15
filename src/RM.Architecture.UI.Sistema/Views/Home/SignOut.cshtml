@@ -1,7 +1,7 @@
-﻿﻿@using Microsoft.AspNet.Identity;
-@using Microsoft.AspNet.Identity
-@using Microsoft.AspNet.Identity.Owin;
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.Owin
 @using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration
+﻿@using Microsoft.AspNet.Identity;
 @{
     ViewBag.Title = "Sair";
 }
@@ -11,10 +11,11 @@
 <div class="row">
     @if (Request.IsAuthenticated)
     {
-        using (Html.BeginForm("SignOutEverywhere", "Account", FormMethod.Post, new { id = "signOutEverywhereForm" }))
+        using (Html.BeginForm("SignOutEverywhere", "Account", FormMethod.Post, new {id = "signOutEverywhereForm"}))
         {
-            @Html.AntiForgeryToken();
-            <input type="submit" value="Sair de Todos os Lugares" class="btn btn-default" />
+            @Html.AntiForgeryToken()
+            ;
+            <input type="submit" value="Sair de Todos os Lugares" class="btn btn-default"/>
         }
     }
 
@@ -27,10 +28,11 @@
     {
         var manager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
         var user = manager.FindById(User.Identity.GetUserId());
-        using (Html.BeginForm("SignOutClient", "Account", FormMethod.Post, new { id = "signOutClientForm" }))
+        using (Html.BeginForm("SignOutClient", "Account", FormMethod.Post, new {id = "signOutClientForm"}))
         {
-            @Html.AntiForgeryToken();
-            <input type="hidden" id="clientId" name="clientId" />
+            @Html.AntiForgeryToken()
+            ;
+            <input type="hidden" id="clientId" name="clientId"/>
         }
         <table>
             <tr>
@@ -56,8 +58,7 @@
 
 @section scripts{
     <script type="text/javascript">
-        function SignOutClient(clientId)
-        {
+        function SignOutClient(clientId) {
             $("#clientId").val(clientId);
             $("#signOutClientForm").submit();
         }

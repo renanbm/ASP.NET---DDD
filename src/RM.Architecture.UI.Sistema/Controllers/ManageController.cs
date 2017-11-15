@@ -81,7 +81,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             {
                 message = ManageMessageId.Error;
             }
-            return RedirectToAction("ManageLogins", new { Message = message });
+            return RedirectToAction("ManageLogins", new {Message = message});
         }
 
         //
@@ -110,7 +110,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 };
                 await _userManager.SmsService.SendAsync(message);
             }
-            return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
+            return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
         }
 
         //
@@ -120,7 +120,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             var rememberBrowserIdentity =
                 AuthenticationManager.CreateTwoFactorRememberBrowserIdentity(User.Identity.GetUserId());
-            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = true }, rememberBrowserIdentity);
+            AuthenticationManager.SignIn(new AuthenticationProperties {IsPersistent = true}, rememberBrowserIdentity);
             return RedirectToAction("Index", "Manage");
         }
 
@@ -170,7 +170,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             return phoneNumber == null
                 ? View("Error")
-                : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
+                : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
         }
 
         //
@@ -188,7 +188,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
                 if (user != null)
                     await SignInAsync(user, false);
-                return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
+                return RedirectToAction("Index", new {Message = ManageMessageId.AddPhoneSuccess});
             }
             // No caso de falha, reexibir a view. 
             ModelState.AddModelError("", "Falha ao adicionar telefone");
@@ -201,11 +201,11 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             var result = await _userManager.SetPhoneNumberAsync(User.Identity.GetUserId(), null);
             if (!result.Succeeded)
-                return RedirectToAction("Index", new { Message = ManageMessageId.Error });
+                return RedirectToAction("Index", new {Message = ManageMessageId.Error});
             var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
             if (user != null)
                 await SignInAsync(user, false);
-            return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
+            return RedirectToAction("Index", new {Message = ManageMessageId.RemovePhoneSuccess});
         }
 
         //
@@ -230,7 +230,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
                 if (user != null)
                     await SignInAsync(user, false);
-                return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
+                return RedirectToAction("Index", new {Message = ManageMessageId.ChangePasswordSuccess});
             }
             AddErrors(result);
             return View(model);
@@ -257,7 +257,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                     var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
                     if (user != null)
                         await SignInAsync(user, false);
-                    return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
+                    return RedirectToAction("Index", new {Message = ManageMessageId.SetPasswordSuccess});
                 }
                 AddErrors(result);
             }
@@ -307,11 +307,11 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
             if (loginInfo == null)
-                return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+                return RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
             var result = await _userManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
             return result.Succeeded
                 ? RedirectToAction("ManageLogins")
-                : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+                : RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
         }
 
         #region Helpers
@@ -327,7 +327,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             await _userManager.SignInClientAsync(user, clientKey);
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie,
                 DefaultAuthenticationTypes.TwoFactorCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent },
+            AuthenticationManager.SignIn(new AuthenticationProperties {IsPersistent = isPersistent},
                 await user.GenerateUserIdentityAsync(_userManager));
         }
 

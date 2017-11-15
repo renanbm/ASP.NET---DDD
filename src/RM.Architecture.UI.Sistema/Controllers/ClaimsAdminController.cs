@@ -50,7 +50,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             {
                 _userManager.AddClaimAsync(id, new Claim(claim.Type, claim.Value));
 
-                return RedirectToAction("Details", "UsersAdmin", new { id });
+                return RedirectToAction("Details", "UsersAdmin", new {id});
             }
             catch
             {

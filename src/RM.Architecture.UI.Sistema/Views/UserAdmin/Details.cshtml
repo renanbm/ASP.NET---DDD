@@ -1,6 +1,4 @@
-﻿@using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
-@using Microsoft.AspNet.Identity.Owin
-@model ApplicationUser
+﻿@model RM.Architecture.Identity.Infra.CrossCuting.Identity.Model.ApplicationUser
 
 @{
     ViewBag.Title = "Detalhes";
@@ -10,7 +8,7 @@
 
 <div>
     <h4>Usuário</h4>
-    <hr />
+    <hr/>
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.UserName)
@@ -23,7 +21,7 @@
 <h4>Lista de Roles para este usuário</h4>
 @if (ViewBag.RoleNames.Count == 0)
 {
-    <hr />
+    <hr/>
     <p>Usuário não pertence a nenhuma Role.</p>
 }
 else
@@ -45,7 +43,7 @@ else
 
 @if (ViewBag.Claims.Count == 0)
 {
-    <hr />
+    <hr/>
     <p>Usuário não possui nenhum Claim.</p>
 }
 else
@@ -75,9 +73,6 @@ else
 }
 
 <p>
-    @Html.ActionLink("Editar", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Editar", "Edit", new {id = Model.Id}) |
     @Html.ActionLink("Voltar para a lista", "Index")
 </p>
-
-
-
