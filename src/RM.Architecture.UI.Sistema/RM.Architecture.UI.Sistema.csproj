@@ -209,7 +209,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\RolesAdminController.cs" />
-    <Compile Include="Controllers\UserAdminController.cs" />
+    <Compile Include="Controllers\UsersAdminController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -298,11 +298,11 @@
     <Content Include="Views\ClaimsAdmin\Index.cshtml" />
     <Content Include="Views\ClaimsAdmin\SetUserClaim.cshtml" />
     <Content Include="Views\Home\SignOut.cshtml" />
-    <Content Include="Views\UserAdmin\Create.cshtml" />
-    <Content Include="Views\UserAdmin\Delete.cshtml" />
-    <Content Include="Views\UserAdmin\Details.cshtml" />
-    <Content Include="Views\UserAdmin\Edit.cshtml" />
-    <Content Include="Views\UserAdmin\Index.cshtml" />
+    <Content Include="Views\UsersAdmin\Create.cshtml" />
+    <Content Include="Views\UsersAdmin\Delete.cshtml" />
+    <Content Include="Views\UsersAdmin\Details.cshtml" />
+    <Content Include="Views\UsersAdmin\Edit.cshtml" />
+    <Content Include="Views\UsersAdmin\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
