@@ -6,18 +6,18 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
     {
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Current password")]
+        [Display(Name = "Senha Atual")]
         public string OldPassword { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "New password")]
+        [Display(Name = "Nova Senha")]
         public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm new password")]
-        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        [Display(Name = "Repita Nova Senha")]
+        [Compare("NewPassword", ErrorMessage = "As senhas não se coincidem.")]
         public string ConfirmPassword { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "E-mail")]
         public string Email { get; set; }
     }
 }

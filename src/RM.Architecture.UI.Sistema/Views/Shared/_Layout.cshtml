@@ -22,6 +22,36 @@
             <ul class="nav navbar-nav">
                 <li>@Html.ActionLink("Lista Usuários", "Index", "Usuarios")</li>
                 <li>@Html.ActionLink("Filiação", "Index", "Filiacao")</li>
+                @{
+                    if (Request.IsAuthenticated)
+                    {
+                        if (User.IsInRole("Admin"))
+                        {
+                            <li>@Html.ActionLink("Admin Roles", "Index", "RolesAdmin")</li>
+                        }
+
+                        var claimsIdentity = User.Identity as System.Security.Claims.ClaimsIdentity;
+                        var claim = claimsIdentity.FindFirst(c => c.Type == "AdmUsers");
+
+                        if (claim != null)
+                        {
+                            if (claim.Value == "True")
+                            {
+                                <li>@Html.ActionLink("Admin Users", "Index", "UsersAdmin")</li>
+                            }
+                        }
+
+                        claim = claimsIdentity.FindFirst(c => c.Type == "AdmClaims");
+                        if (claim != null)
+                        {
+                            if (claim.Value == "True")
+                            {
+                                <li>@Html.ActionLink("Admin Claims", "Index", "ClaimsAdmin")</li>
+                            }
+                        }
+                    }
+
+                }
             </ul>
             @Html.Partial("_LoginPartial")
         </div>
@@ -31,7 +61,7 @@
     @RenderBody()
     <hr/>
     <footer>
-        <p>Renan Ben Moshe - Projeto base de arquitetura</p>
+        <p>&copy; @DateTime.Now.Year - Projeto Base de Arquitetura by Renan Ben Moshe</p>
     </footer>
 </div>
 @Scripts.Render("~/bundles/jquery")

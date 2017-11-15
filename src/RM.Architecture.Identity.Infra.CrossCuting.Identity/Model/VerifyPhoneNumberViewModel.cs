@@ -5,12 +5,12 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
     public class VerifyPhoneNumberViewModel
     {
         [Required]
-        [Display(Name = "Code")]
+        [Display(Name = "Código")]
         public string Code { get; set; }
 
         [Required]
         [Phone]
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Número do Telefone")]
         public string PhoneNumber { get; set; }
     }
 }

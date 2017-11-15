@@ -1,10 +1,9 @@
 ﻿@{
-    ViewBag.Title = "Verificar E-mail";
+    ViewBag.Title = "Confirmar E-mail";
 }
 <h2>@ViewBag.Title.</h2>
-<p class="text-info">
-    Verifique seu e-mail e confirme seu endereço.
-</p>
-<p class="text-danger">
-    DEMO: Caso o e-mail não chegue clique neste link: <a href="@ViewBag.Link">link</a>
-</p>
+<div>
+    <p>
+        Obrigado por confirmar seu e-mail. Por favor @Html.ActionLink("Clique aqui para Login", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+    </p>
+</div>

@@ -22,5 +22,12 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             return View();
         }
+
+        public ActionResult SignOut()
+        {
+            ViewBag.Message = "Sair";
+
+            return View();
+        }
     }
 }

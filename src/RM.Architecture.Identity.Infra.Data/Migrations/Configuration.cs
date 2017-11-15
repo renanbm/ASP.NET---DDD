@@ -7,6 +7,7 @@ namespace RM.Architecture.Identity.Infra.Data.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            ContextKey = "RM.Architecture.Identity.Infra.Data.Context.IdentityContext";
         }
 
         protected override void Seed(Context.IdentityContext context)

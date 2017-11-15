@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
 {
@@ -8,14 +9,15 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
         public string Provider { get; set; }
 
         [Required]
-        [Display(Name = "Code")]
+        [Display(Name = "Código")]
         public string Code { get; set; }
 
         public string ReturnUrl { get; set; }
 
-        [Display(Name = "Remember this browser?")]
+        [Display(Name = "Lembrar este Browser?")]
         public bool RememberBrowser { get; set; }
 
-        public bool RememberMe { get; set; }
+        [HiddenInput]
+        public string UserId { get; set; }
     }
 }

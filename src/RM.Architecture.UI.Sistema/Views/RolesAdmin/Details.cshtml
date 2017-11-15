@@ -1,14 +1,11 @@
 ﻿@model Microsoft.AspNet.Identity.EntityFramework.IdentityRole
-
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Detalhes";
 }
-
-<h2>Details.</h2>
-
+<h2>Detalhes.</h2>
 <div>
     <h4>Roles.</h4>
-    <hr/>
+    <hr />
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Name)
@@ -18,15 +15,13 @@
         </dd>
     </dl>
 </div>
-<h4>List of users in this role</h4>
+<h4>Lista de usuários nesta Role</h4>
 @if (ViewBag.UserCount == 0)
 {
-    <hr/>
-    <p>No users found in this role.</p>
+    <hr />
+    <p>Nenhum usuário nesta Role.</p>
 }
-
 <table class="table">
-
     @foreach (var item in ViewBag.Users)
     {
         <tr>
@@ -37,6 +32,7 @@
     }
 </table>
 <p>
-    @Html.ActionLink("Edit", "Edit", new {id = Model.Id}) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Editar", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Voltar para a lista", "Index")
 </p>
+

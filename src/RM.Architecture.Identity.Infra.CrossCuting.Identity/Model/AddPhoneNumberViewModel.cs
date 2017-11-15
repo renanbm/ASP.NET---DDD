@@ -6,7 +6,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
     {
         [Required]
         [Phone]
-        [Display(Name = "Phone Number")]
+        [Display(Name = "Número do Telefone")]
         public string Number { get; set; }
     }
 }
