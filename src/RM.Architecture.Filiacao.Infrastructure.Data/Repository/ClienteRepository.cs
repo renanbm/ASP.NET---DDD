@@ -20,7 +20,14 @@ namespace RM.Architecture.Filiacao.Infrastructure.Data.Repository
         {
             var cn = Db.Database.Connection;
 
-            const string sql = "SELECT * FROM Clientes";
+            const string sql = @"SELECT CodCliente
+	                                   ,Nome
+	                                   ,DataNascimento
+	                                   ,DataCadastro
+	                                   ,Ativo
+                                       ,Email
+                                       ,Cpf
+                                FROM Clientes";
 
             var clientes = cn.Query<Cliente, string, string, Cliente>(sql,
                 (c, cpf, email) =>
@@ -28,7 +35,7 @@ namespace RM.Architecture.Filiacao.Infrastructure.Data.Repository
                     c.Cpf.Numero = cpf;
                     c.Email.Endereco = email;
                     return c;
-                }, splitOn: "CodCliente, cpf, email");
+                }, splitOn: "CodCliente, Email, Cpf");
 
             return clientes;
         }
@@ -42,19 +49,34 @@ namespace RM.Architecture.Filiacao.Infrastructure.Data.Repository
         {
             var cn = Db.Database.Connection;
 
-            const string sql = @"SELECT * FROM Clientes AS C " +
-                               "LEFT JOIN Enderecos AS E " +
-                               "ON C.CodCliente = E.CodCliente " +
-                               "WHERE C.CodCliente = @sid";
+            const string sql = @"SELECT C.CodCliente
+	                                   ,C.Nome
+	                                   ,C.DataNascimento
+	                                   ,C.DataCadastro
+	                                   ,C.Ativo
+                                       ,C.Email
+                                       ,C.Cpf
+	                                   ,E.CodEndereco
+	                                   ,E.Logradouro
+	                                   ,E.Numero
+	                                   ,E.Complemento
+	                                   ,E.Bairro
+	                                   ,E.Cep
+	                                   ,E.Cidade
+	                                   ,E.Estado 
+                                FROM Clientes AS C
+                                LEFT JOIN Enderecos AS E
+                                ON C.CodCliente = E.CodCliente
+                                WHERE C.CodCliente = @sid";
 
-            var cliente = cn.Query<Cliente, Endereco, string, string, Cliente>(sql,
-                (c, e, cpf, email) =>
+            var cliente = cn.Query<Cliente, string, string, Endereco, Cliente>(sql,
+                (c, email, cpf, e) =>
                 {
                     c.Enderecos.Add(e);
                     c.Cpf.Numero = cpf;
                     c.Email.Endereco = email;
                     return c;
-                }, new {sid = id}, splitOn: "CodCliente, CodEndereco, Cpf, Email");
+                }, new {sid = id}, splitOn: "CodCliente, Email, Cpf, CodEndereco");
 
             return cliente.FirstOrDefault();
         }
