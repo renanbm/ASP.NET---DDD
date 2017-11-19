@@ -129,18 +129,25 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
+                var user = new ApplicationUser()
+                {
+                    UserName = model.UserName,
+                    Nome = model.Nome,
+                    Sobrenome = model.Sobrenome,
+                    Email = model.Email
+                };
+
                 var result = await _userManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code},
-                        Request.Url.Scheme);
-                    await _userManager.SendEmailAsync(user.Id, "Confirme sua Conta",
-                        "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code}, Request.Url.Scheme);
+                    await _userManager.SendEmailAsync(user.Id, "Confirme sua Conta", "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
                     ViewBag.Link = callbackUrl;
                     return View("DisplayEmail");
                 }
+
                 AddErrors(result);
             }
 

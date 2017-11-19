@@ -134,6 +134,12 @@
     <Compile Include="Configuration\EmailService.cs" />
     <Compile Include="Configuration\SmsService.cs" />
     <Compile Include="Context\ApplicationDbContext.cs" />
+    <Compile Include="EntityConfig\ApplicationUserConfig.cs" />
+    <Compile Include="EntityConfig\RolesConfig.cs" />
+    <Compile Include="EntityConfig\LoginConfig.cs" />
+    <Compile Include="EntityConfig\UsuarioRolesConfig.cs" />
+    <Compile Include="EntityConfig\UsuarioClaimsConfig.cs" />
+    <Compile Include="EntityConfig\IdentityUserConfig.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\AddPhoneNumberViewModel.cs" />
     <Compile Include="Model\ApplicationUser.cs" />

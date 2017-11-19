@@ -5,6 +5,16 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
     public class RegisterViewModel
     {
         [Required]
+        [Display(Name = "User name")]
+        public string UserName { get; set; }
+
+        [Required]
+        public string Nome { get; set; }
+
+        [Required]
+        public string Sobrenome { get; set; }
+
+        [Required]
         [EmailAddress]
         [Display(Name = "E-mail")]
         public string Email { get; set; }

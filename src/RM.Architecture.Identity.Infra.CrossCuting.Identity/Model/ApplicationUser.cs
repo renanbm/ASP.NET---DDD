@@ -15,6 +15,12 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
             Clients = new Collection<Client>();
         }
 
+        public string Nome { get; set; }
+
+        public string Sobrenome { get; set; }
+
+        public override string Email { get; set; }
+        
         public virtual ICollection<Client> Clients { get; set; }
 
         [NotMapped]
