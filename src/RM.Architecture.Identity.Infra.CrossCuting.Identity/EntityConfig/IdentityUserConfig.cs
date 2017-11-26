@@ -7,8 +7,20 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
     {
         public IdentityUserConfig()
         {
-            Property(u => u.Id)
+            HasKey(u => u.Id);
+
+            Property(p => p.Id)
+                .IsRequired()
+                .HasMaxLength(128)
                 .HasColumnName("CodUsuario");
+
+            Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(256);
+
+            Property(u => u.UserName)
+                .IsRequired()
+                .HasMaxLength(256);
 
             ToTable("Usuarios");
         }

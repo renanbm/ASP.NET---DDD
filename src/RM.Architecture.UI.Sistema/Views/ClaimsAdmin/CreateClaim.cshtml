@@ -16,10 +16,10 @@
         @Html.ValidationSummary(true, "", new {@class = "text-danger"})
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, new {@class = "control-label col-md-2"})
+            @Html.LabelFor(model => model.Nome, new {@class = "control-label col-md-2"})
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.Name, new {@class = "form-control"})
-                @Html.ValidationMessageFor(model => model.Name)
+                @Html.TextBoxFor(model => model.Nome, new {@class = "form-control"})
+                @Html.ValidationMessageFor(model => model.Nome)
             </div>
         </div>
 

@@ -11,7 +11,8 @@ namespace RM.Architecture.Identity.Infra.Data.EntityConfig
 
             Property(u => u.Id)
                 .IsRequired()
-                .HasMaxLength(128);
+                .HasMaxLength(128)
+                .HasColumnName("CodUsuario");
 
             Property(u => u.Email)
                 .IsRequired()
@@ -21,7 +22,7 @@ namespace RM.Architecture.Identity.Infra.Data.EntityConfig
                 .IsRequired()
                 .HasMaxLength(256);
 
-            ToTable("AspNetUsers");
+            ToTable("Usuarios");
         }
     }
 }

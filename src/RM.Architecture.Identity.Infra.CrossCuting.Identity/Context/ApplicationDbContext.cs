@@ -1,4 +1,6 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using Microsoft.AspNet.Identity.EntityFramework;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
@@ -22,6 +24,23 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Context
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+            modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
+
+            modelBuilder.Properties()
+                .Where(p => p.Name == "Cod" + p.ReflectedType?.Name)
+                .Configure(p => p.IsKey());
+
+            modelBuilder.Properties<Guid>()
+                .Configure(p => p.HasColumnType("uniqueidentifier"));
+
+            modelBuilder.Properties<string>()
+                .Configure(p => p.HasColumnType("varchar"));
+
+            modelBuilder.Properties<string>()
+                .Configure(p => p.HasMaxLength(100));
+
             modelBuilder.Configurations.Add(new IdentityUserConfig());
             modelBuilder.Configurations.Add(new ApplicationUserConfig());
             modelBuilder.Configurations.Add(new LoginConfig());

@@ -7,6 +7,8 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
     {
         public ClaimsConfig()
         {
+            HasKey(c => c.CodClaim);
+
             ToTable("Claims");
         }
     }

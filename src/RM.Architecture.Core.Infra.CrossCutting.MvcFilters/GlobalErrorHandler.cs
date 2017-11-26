@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 
 namespace RM.Architecture.Core.Infra.CrossCutting.MvcFilters
 {
@@ -11,6 +12,11 @@ namespace RM.Architecture.Core.Infra.CrossCutting.MvcFilters
 
             if (filterContext.Exception != null)
             {
+                // var machinename = ((System.Web.HttpServerUtilityWrapper)((System.Web.HttpContextWrapper)((System.Web.Mvc.Controller)filterContext.Controller).HttpContext).Server).MachineName;
+                // var message = filterContext.Exception.Message;
+
+                // $"{DateTime.Now} => No servidor {machinename}, o Usuário: {user}, Login: {login}, IP: {ip}, utilizando a sessão {session} e os cookies: {cookies}, fez um request na Action: {action} da Controller: {controller}, utilizando o browser: {browser}, no sistema operacional: {OS}. OS headers HTTP eram: {headers}, com a querystring { url} utilizando o verbo http { verbo} e obteve a response { response}. a Model anterior era { ModelAnteriorSerializada} e a posterior era { ModelPosteriorSerializada}. A mensafem de erro foi: {message}";
+
                 // Manipular a EX
                 // Injetar alguma LIB de tratamento de erro
                 // => Gravar log do erro no BD
