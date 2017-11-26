@@ -26,8 +26,10 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Context
             modelBuilder.Configurations.Add(new ApplicationUserConfig());
             modelBuilder.Configurations.Add(new LoginConfig());
             modelBuilder.Configurations.Add(new RolesConfig());
+            modelBuilder.Configurations.Add(new ClaimsConfig());
             modelBuilder.Configurations.Add(new UsuarioRolesConfig());
             modelBuilder.Configurations.Add(new UsuarioClaimsConfig());
+            modelBuilder.Configurations.Add(new ClientsConfig());
 
             base.OnModelCreating(modelBuilder);
         }

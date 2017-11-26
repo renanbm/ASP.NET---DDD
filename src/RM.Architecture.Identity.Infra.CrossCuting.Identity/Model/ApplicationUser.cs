@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -20,10 +19,9 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
         public string Sobrenome { get; set; }
 
         public override string Email { get; set; }
-        
+
         public virtual ICollection<Client> Clients { get; set; }
 
-        [NotMapped]
         public string CurrentClientId { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager,

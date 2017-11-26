@@ -22,14 +22,14 @@ namespace RM.Architecture.Filiacao.Domain.Entities.Cliente
         public DateTime DataNascimento { get; set; }
 
         public Sexo Sexo { get; set; }
-        //{
-
-        //public override string ObterNome()
-        //}
-        //    return (int)EnumTipoPessoa.Fisica;
-        //{
 
         //public override int ObterTipoPessoa()
+        //{
+        //    return (int)EnumTipoPessoa.Fisica;
+        //}
+
+        //public override string ObterNome()
+        //{
         //    return Nome;
         //}
 

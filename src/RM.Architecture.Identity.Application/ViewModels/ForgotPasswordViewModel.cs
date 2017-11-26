@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
+namespace RM.Architecture.Identity.Application.ViewModels
 {
-    public class ForgotViewModel
+    public class ForgotPasswordViewModel
     {
         [Required]
+        [EmailAddress]
         [Display(Name = "E-mail")]
         public string Email { get; set; }
     }

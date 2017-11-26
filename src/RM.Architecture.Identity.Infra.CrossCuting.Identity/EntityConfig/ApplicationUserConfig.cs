@@ -10,6 +10,8 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
             Property(p => p.Id)
                 .HasColumnName("CodUsuario");
 
+            Ignore(p => p.CurrentClientId);
+
             ToTable("Usuarios");
         }
     }

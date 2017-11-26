@@ -135,35 +135,17 @@
     <Compile Include="Configuration\SmsService.cs" />
     <Compile Include="Context\ApplicationDbContext.cs" />
     <Compile Include="EntityConfig\ApplicationUserConfig.cs" />
+    <Compile Include="EntityConfig\ClaimsConfig.cs" />
+    <Compile Include="EntityConfig\ClientConfig.cs" />
     <Compile Include="EntityConfig\RolesConfig.cs" />
     <Compile Include="EntityConfig\LoginConfig.cs" />
     <Compile Include="EntityConfig\UsuarioRolesConfig.cs" />
     <Compile Include="EntityConfig\UsuarioClaimsConfig.cs" />
     <Compile Include="EntityConfig\IdentityUserConfig.cs" />
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Model\AddPhoneNumberViewModel.cs" />
     <Compile Include="Model\ApplicationUser.cs" />
-    <Compile Include="Model\ChangePasswordViewModel.cs" />
     <Compile Include="Model\Claims.cs" />
-    <Compile Include="Model\ClaimViewModel.cs" />
     <Compile Include="Model\Client.cs" />
-    <Compile Include="Model\ConfigureTwoFactorViewModel.cs" />
-    <Compile Include="Model\EditUserViewModel.cs" />
-    <Compile Include="Model\ExternalLoginConfirmationViewModel.cs" />
-    <Compile Include="Model\ExternalLoginListViewModel.cs" />
-    <Compile Include="Model\FactorViewModel.cs" />
-    <Compile Include="Model\ForgotPasswordViewModel.cs" />
-    <Compile Include="Model\ForgotViewModel.cs" />
-    <Compile Include="Model\IndexViewModel.cs" />
-    <Compile Include="Model\LoginViewModel.cs" />
-    <Compile Include="Model\ManageLoginsViewModel.cs" />
-    <Compile Include="Model\RegisterViewModel.cs" />
-    <Compile Include="Model\ResetPasswordViewModel.cs" />
-    <Compile Include="Model\RoleViewModel.cs" />
-    <Compile Include="Model\SendCodeViewModel.cs" />
-    <Compile Include="Model\SetPasswordViewModel.cs" />
-    <Compile Include="Model\VerifyCodeViewModel.cs" />
-    <Compile Include="Model\VerifyPhoneNumberViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

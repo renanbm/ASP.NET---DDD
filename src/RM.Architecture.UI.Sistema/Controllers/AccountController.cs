@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using RM.Architecture.Identity.Application.ViewModels;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
@@ -129,7 +130,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser()
+                var user = new ApplicationUser
                 {
                     UserName = model.UserName,
                     Nome = model.Nome,
@@ -142,8 +143,10 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code}, Request.Url.Scheme);
-                    await _userManager.SendEmailAsync(user.Id, "Confirme sua Conta", "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code},
+                        Request.Url.Scheme);
+                    await _userManager.SendEmailAsync(user.Id, "Confirme sua Conta",
+                        "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
                     ViewBag.Link = callbackUrl;
                     return View("DisplayEmail");
                 }
@@ -185,10 +188,11 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             var callbackUrl = Url.Action("ResetPassword", "Account", new {userId = user.Id, code}, Request.Url?.Scheme);
 
-            await _userManager.SendEmailAsync(user.Id, "Esqueci minha senha", "Por favor altere sua senha clicando aqui: <a href='" + callbackUrl + "'></a>");
+            await _userManager.SendEmailAsync(user.Id, "Esqueci minha senha",
+                "Por favor altere sua senha clicando aqui: <a href='" + callbackUrl + "'></a>");
 
             ViewBag.Link = callbackUrl;
-            
+
             return View("ForgotPasswordConfirmation");
         }
 

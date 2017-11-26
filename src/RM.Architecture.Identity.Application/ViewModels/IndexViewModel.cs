@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNet.Identity;
 
-namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
+namespace RM.Architecture.Identity.Application.ViewModels
 {
     public class IndexViewModel
     {

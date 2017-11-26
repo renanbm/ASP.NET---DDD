@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
-namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
+namespace RM.Architecture.Identity.Application.ViewModels
 {
     public class EditUserViewModel
     {

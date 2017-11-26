@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using RM.Architecture.Core.Infra.CrossCutting.MvcFilters;
+using RM.Architecture.Identity.Application.ViewModels;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
@@ -58,7 +59,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = userViewModel.Email, Email = userViewModel.Email };
+                var user = new ApplicationUser {UserName = userViewModel.Email, Email = userViewModel.Email};
                 var adminresult = await _userManager.CreateAsync(user, userViewModel.Password);
 
                 //Add User to the selected Roles 

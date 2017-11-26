@@ -1,11 +1,11 @@
 ﻿@using Microsoft.Owin.Security
-@model RM.Architecture.Identity.Infra.CrossCuting.Identity.Model.ExternalLoginListViewModel
+@model RM.Architecture.Identity.Application.ViewModels.ExternalLoginListViewModel
 <h4>Utilize uma conta para login.</h4>
-<hr />
+<hr/>
 @{
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
 
-    using (Html.BeginForm("ExternalLogin", "Account", new { Model.ReturnUrl }))
+    using (Html.BeginForm("ExternalLogin", "Account", new {Model.ReturnUrl}))
     {
         @Html.AntiForgeryToken()
         <div id="socialLoginList">

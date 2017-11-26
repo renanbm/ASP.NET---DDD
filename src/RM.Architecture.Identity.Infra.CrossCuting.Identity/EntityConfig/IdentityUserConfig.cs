@@ -11,6 +11,6 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
                 .HasColumnName("CodUsuario");
 
             ToTable("Usuarios");
-        }      
+        }
     }
 }

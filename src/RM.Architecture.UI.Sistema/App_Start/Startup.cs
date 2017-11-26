@@ -90,7 +90,7 @@ namespace RM.Architecture.UI.Sistema
                     foreach (var x in context.User)
                     {
                         var claimType = string.Format("urn:facebook:{0}", x.Key);
-                        string claimValue = x.Value.ToString();
+                        var claimValue = x.Value.ToString();
                         if (!context.Identity.HasClaim(claimType, claimValue))
                             context.Identity.AddClaim(new Claim(claimType, claimValue, XmlSchemaString, "Facebook"));
                     }

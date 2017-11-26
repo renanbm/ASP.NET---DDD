@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using RM.Architecture.Core.Infra.CrossCutting.MvcFilters;
+using RM.Architecture.Identity.Application.ViewModels;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Context;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;

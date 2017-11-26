@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using RM.Architecture.Identity.Application.ViewModels;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
@@ -161,7 +162,9 @@ namespace RM.Architecture.UI.Sistema.Controllers
         // GET: /Account/VerifyPhoneNumber
         public ActionResult VerifyPhoneNumber(string phoneNumber)
         {
-            return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
+            return phoneNumber == null
+                ? View("Error")
+                : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
         }
 
         //

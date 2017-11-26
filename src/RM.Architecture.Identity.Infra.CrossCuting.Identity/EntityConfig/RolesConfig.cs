@@ -8,6 +8,6 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
         public RolesConfig()
         {
             ToTable("Roles");
-        }      
+        }
     }
 }

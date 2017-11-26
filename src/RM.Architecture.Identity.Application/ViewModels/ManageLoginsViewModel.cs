@@ -2,7 +2,7 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 
-namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
+namespace RM.Architecture.Identity.Application.ViewModels
 {
     public class ManageLoginsViewModel
     {
