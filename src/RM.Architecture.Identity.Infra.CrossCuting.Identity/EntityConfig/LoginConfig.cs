@@ -9,6 +9,8 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
         {
             HasKey(p => new { p.LoginProvider, p.ProviderKey, p.UserId });
 
+            Property(p => p.UserId).HasColumnName("CodUsuario");
+
             ToTable("Logins");
         }
     }

@@ -9,6 +9,9 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
         {
             HasKey(c => new {c.UserId, c.RoleId});
 
+            Property(p => p.UserId).HasColumnName("CodUsuario");
+            Property(p => p.RoleId).HasColumnName("CodRole");
+
             ToTable("UsuarioRoles");
         }
     }

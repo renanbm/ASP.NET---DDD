@@ -7,6 +7,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
     {
         public ClientsConfig()
         {
+            Property(p => p.Id).HasColumnName("CodClient");
             ToTable("AspNetClients");
         }
     }

@@ -9,15 +9,14 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration
     {
         public Task SendAsync(IdentityMessage message)
         {
-            if (ConfigurationManager.AppSettings["Internet"] == "true")
-            {
-                const string accountSid = "SEU ID";
-                const string authToken = "SEU TOKEN";
+            if (ConfigurationManager.AppSettings["Internet"] != "true") return Task.FromResult(0);
 
-                var client = new TwilioRestClient(accountSid, authToken);
+            const string accountSid = "SEU ID";
+            const string authToken = "SEU TOKEN";
 
-                client.SendMessage("814-350-7742", message.Destination, message.Body);
-            }
+            var client = new TwilioRestClient(accountSid, authToken);
+
+            client.SendMessage("814-350-7742", message.Destination, message.Body);
 
             return Task.FromResult(0);
         }

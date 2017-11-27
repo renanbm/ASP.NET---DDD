@@ -143,11 +143,8 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 if (result.Succeeded)
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code},
-                        Request.Url.Scheme);
-                    await _userManager.SendEmailAsync(user.Id, "Confirme sua Conta",
-                        "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
-                    ViewBag.Link = callbackUrl;
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code}, Request.Url?.Scheme);
+                    await _userManager.SendEmailAsync(user.Id, "Confirme sua Conta", "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
                     return View("DisplayEmail");
                 }
 
@@ -188,8 +185,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             var callbackUrl = Url.Action("ResetPassword", "Account", new {userId = user.Id, code}, Request.Url?.Scheme);
 
-            await _userManager.SendEmailAsync(user.Id, "Esqueci minha senha",
-                "Por favor altere sua senha clicando aqui: <a href='" + callbackUrl + "'></a>");
+            await _userManager.SendEmailAsync(user.Id, "Esqueci minha senha", "Por favor altere sua senha clicando aqui: <a href='" + callbackUrl + "'></a>");
 
             ViewBag.Link = callbackUrl;
 

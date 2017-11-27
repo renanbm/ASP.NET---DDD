@@ -7,6 +7,10 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
     {
         public UsuarioClaimsConfig()
         {
+            Property(p => p.Id).HasColumnName("CodUsuarioClaim");
+
+            Property(p => p.UserId).HasColumnName("CodUsuario");
+
             ToTable("UsuarioClaims");
         }
     }

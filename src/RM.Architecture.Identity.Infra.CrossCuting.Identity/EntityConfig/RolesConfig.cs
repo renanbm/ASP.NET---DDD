@@ -7,6 +7,8 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
     {
         public RolesConfig()
         {
+            Property(p => p.Id).HasColumnName("CodRole");
+
             ToTable("Roles");
         }
     }
