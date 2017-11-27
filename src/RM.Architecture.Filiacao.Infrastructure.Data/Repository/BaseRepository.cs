@@ -8,45 +8,45 @@ using RM.Architecture.Filiacao.Infrastructure.Data.Context;
 
 namespace RM.Architecture.Filiacao.Infrastructure.Data.Repository
 {
-    public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
+    public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
     {
-        protected ArchitectureContext Db;
-        protected DbSet<TEntity> DbSet;
+        protected readonly ArchitectureContext Db;
+        private readonly DbSet<TEntity> _dbSet;
 
-        public BaseRepository(ArchitectureContext context)
+        protected BaseRepository(ArchitectureContext context)
         {
             Db = context;
-            DbSet = Db.Set<TEntity>();
+            _dbSet = Db.Set<TEntity>();
         }
 
         public virtual IEnumerable<TEntity> Listar()
         {
-            return DbSet.ToList();
+            return _dbSet.ToList();
         }
 
         public virtual IEnumerable<TEntity> ListarPaginado(int take, int skip)
         {
-            return DbSet.Skip(skip).Take(take).ToList();
+            return _dbSet.Skip(skip).Take(take).ToList();
         }
 
         public IEnumerable<TEntity> Consultar(Expression<Func<TEntity, bool>> predicate)
         {
-            return DbSet.Where(predicate);
+            return _dbSet.Where(predicate);
         }
 
         public virtual TEntity Obter(Guid id)
         {
-            return DbSet.Find(id);
+            return _dbSet.Find(id);
         }
 
         public virtual TEntity Adicionar(TEntity obj)
         {
-            return DbSet.Add(obj);
+            return _dbSet.Add(obj);
         }
 
         public virtual TEntity Atualizar(TEntity obj)
         {
-            DbSet.Attach(obj);
+            _dbSet.Attach(obj);
             Db.Entry(obj).State = EntityState.Modified;
 
             return obj;
@@ -54,7 +54,7 @@ namespace RM.Architecture.Filiacao.Infrastructure.Data.Repository
 
         public virtual void Remover(Guid id)
         {
-            DbSet.Remove(DbSet.Find(id));
+            _dbSet.Remove(_dbSet.Find(id));
         }
 
         public int SaveChanges()
