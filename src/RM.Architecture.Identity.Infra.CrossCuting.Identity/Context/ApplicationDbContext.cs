@@ -27,7 +27,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Context
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
             modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
-
+            
             modelBuilder.Properties()
                 .Where(p => p.Name == "Cod" + p.ReflectedType?.Name)
                 .Configure(p => p.IsKey());
@@ -40,7 +40,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Context
 
             modelBuilder.Properties<string>()
                 .Configure(p => p.HasMaxLength(100));
-
+            
             modelBuilder.Configurations.Add(new IdentityUserConfig());
             modelBuilder.Configurations.Add(new ApplicationUserConfig());
             modelBuilder.Configurations.Add(new LoginConfig());
@@ -49,8 +49,6 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Context
             modelBuilder.Configurations.Add(new UsuarioRolesConfig());
             modelBuilder.Configurations.Add(new UsuarioClaimsConfig());
             modelBuilder.Configurations.Add(new ClientsConfig());
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }

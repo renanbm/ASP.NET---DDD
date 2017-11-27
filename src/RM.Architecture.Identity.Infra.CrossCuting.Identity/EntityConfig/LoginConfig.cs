@@ -7,6 +7,8 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
     {
         public LoginConfig()
         {
+            HasKey(p => new { p.LoginProvider, p.ProviderKey, p.UserId });
+
             ToTable("Logins");
         }
     }

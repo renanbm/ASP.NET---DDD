@@ -7,6 +7,8 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.EntityConfig
     {
         public UsuarioRolesConfig()
         {
+            HasKey(c => new {c.UserId, c.RoleId});
+
             ToTable("UsuarioRoles");
         }
     }
