@@ -42,5 +42,11 @@
     <Compile Include="Interfaces\Repository\IUsuarioRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RM.Architecture.Identity.Infra.CrossCuting.Identity\RM.Architecture.Identity.Infra.CrossCuting.Identity.csproj">
+      <Project>{FE423C9C-C684-4436-935E-303E60A59BB8}</Project>
+      <Name>RM.Architecture.Identity.Infra.CrossCuting.Identity</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

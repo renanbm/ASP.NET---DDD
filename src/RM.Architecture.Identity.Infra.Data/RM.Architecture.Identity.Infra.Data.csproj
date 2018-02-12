@@ -59,6 +59,10 @@
       <Project>{cbf83608-0705-4330-90f7-d03f36f9dd7e}</Project>
       <Name>RM.Architecture.Identity.Domain</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RM.Architecture.Identity.Infra.CrossCuting.Identity\RM.Architecture.Identity.Infra.CrossCuting.Identity.csproj">
+      <Project>{FE423C9C-C684-4436-935E-303E60A59BB8}</Project>
+      <Name>RM.Architecture.Identity.Infra.CrossCuting.Identity</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

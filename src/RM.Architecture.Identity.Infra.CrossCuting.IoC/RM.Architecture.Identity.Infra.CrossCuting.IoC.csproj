@@ -70,6 +70,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RM.Architecture.Identity.Application\RM.Architecture.Identity.Application.csproj">
+      <Project>{BDD7C84F-FA80-4A5E-848A-07674FFA06C6}</Project>
+      <Name>RM.Architecture.Identity.Application</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RM.Architecture.Identity.Domain\RM.Architecture.Identity.Domain.csproj">
       <Project>{CBF83608-0705-4330-90F7-D03F36F9DD7E}</Project>
       <Name>RM.Architecture.Identity.Domain</Name>

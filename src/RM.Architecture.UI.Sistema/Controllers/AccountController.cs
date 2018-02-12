@@ -1,12 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using RM.Architecture.Identity.Application.Interfaces;
 using RM.Architecture.Identity.Application.ViewModels;
-using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
 namespace RM.Architecture.UI.Sistema.Controllers
@@ -14,19 +15,27 @@ namespace RM.Architecture.UI.Sistema.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        // Used for XSRF protection when adding external logins
+        #region [Variáveis Locais]
+
+        private readonly IUsuarioAppService _usuarioAppService;
+        private readonly ILoginAppService _loginAppService;
+
         private const string XsrfKey = "XsrfId";
+        private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
 
-        private readonly ApplicationSignInManager _signInManager;
-        private readonly ApplicationUserManager _userManager;
+        #endregion
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        #region [Construtor]
+
+        public AccountController(ILoginAppService loginAppService, IUsuarioAppService usuarioAppService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _loginAppService = loginAppService;
+            _usuarioAppService = usuarioAppService;
         }
 
-        private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
+        #endregion
+
+        #region [Login]
 
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
@@ -43,44 +52,25 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
+            var result = await _loginAppService.ObterStatusLogin(model.Email, model.Password, model.RememberMe);
+
             switch (result)
             {
                 case SignInStatus.Success:
-                    var user = await _userManager.FindAsync(model.Email, model.Password);
+                    var user = await _usuarioAppService.ObterUsuario(model.Email, model.Password);
                     if (!user.EmailConfirmed)
                         TempData["AvisoEmail"] = "Usuário não confirmado, verifique seu e-mail.";
-                    await SignInAsync(user, model.RememberMe);
+                    var clientKey = Request.Browser.Type;
+                    await _loginAppService.EfetuarLogin(user, model.RememberMe, AuthenticationManager, clientKey);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new {ReturnUrl = returnUrl});
-                case SignInStatus.Failure:
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
                 default:
                     ModelState.AddModelError("", "Login ou Senha incorretos.");
                     return View(model);
             }
-        }
-
-        private async Task SignInAsync(ApplicationUser user, bool isPersistent)
-        {
-            var clientKey = Request.Browser.Type;
-            await _userManager.SignInClientAsync(user, clientKey);
-            // Zerando contador de logins errados.
-            await _userManager.ResetAccessFailedCountAsync(user.Id);
-
-            // Coletando Claims externos (se houver)
-            var ext = await AuthenticationManager.GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
-
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie,
-                DefaultAuthenticationTypes.TwoFactorCookie, DefaultAuthenticationTypes.ApplicationCookie);
-            AuthenticationManager.SignIn
-            (
-                new AuthenticationProperties {IsPersistent = isPersistent},
-                // Criação da instancia do Identity e atribuição dos Claims
-                await user.GenerateUserIdentityAsync(_userManager, ext)
-            );
         }
 
         [AllowAnonymous]
@@ -89,8 +79,10 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (!await _signInManager.HasBeenVerifiedAsync())
                 return View("Error");
 
-            return View(new VerifyCodeViewModel {Provider = provider, ReturnUrl = returnUrl, UserId = userId});
+            return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, UserId = userId });
         }
+
+        #endregion
 
         [HttpPost]
         [AllowAnonymous]
@@ -100,22 +92,23 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var result =
-                await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, false, model.RememberBrowser);
+            var result = await _loginAppService.ObterStatusLoginTwoFactor(model.Provider, model.Code, model.RememberBrowser);
+
             switch (result)
             {
                 case SignInStatus.Success:
-                    var user = _userManager.FindByIdAsync(model.UserId);
+                    var user = _loginAppService.ObterUsuario(model.UserId);
                     await SignInAsync(user.Result, false);
                     return RedirectToLocal(model.ReturnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
-                case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Código Inválido.");
                     return View(model);
             }
         }
+
+        #region [Cadastro]
 
         [AllowAnonymous]
         public ActionResult Register()
@@ -128,40 +121,45 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+            var user = new ApplicationUser
             {
-                var user = new ApplicationUser
-                {
-                    UserName = model.UserName,
-                    Nome = model.Nome,
-                    Sobrenome = model.Sobrenome,
-                    Email = model.Email
-                };
+                UserName = model.UserName,
+                Nome = model.Nome,
+                Sobrenome = model.Sobrenome,
+                Email = model.Email
+            };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
-                {
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new {userId = user.Id, code}, Request.Url?.Scheme);
-                    await _userManager.SendEmailAsync(user.Id, "Confirme sua Conta", "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
-                    return View("DisplayEmail");
-                }
-
-                AddErrors(result);
+            if (result.Succeeded)
+            {
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code }, Request.Url?.Scheme);
+                await _userManager.SendEmailAsync(user.Id, "Confirme sua Conta", "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
+                return View("DisplayEmail");
             }
+
+            AddErrors(result);
 
             return View(model);
         }
 
+        #endregion
+
         [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        public async Task<ActionResult> ConfirmEmail(string codUsuario, string codigoVerificacao)
         {
-            if (userId == null || code == null)
+            if (codUsuario == null || codigoVerificacao == null)
                 return View("Error");
-            var result = await _userManager.ConfirmEmailAsync(userId, code);
+
+            var result = await _loginAppService.ConfirmarEmail(new Guid(codUsuario), codigoVerificacao);
+
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
+
+        #region [Esqueci Senha]
 
         [AllowAnonymous]
         public ActionResult ForgotPassword()
@@ -176,14 +174,14 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var user = await _userManager.FindByNameAsync(model.Email);
+            var user = await _loginAppService.ObterUsuario(model.Email);
 
-            if (user == null || !await _userManager.IsEmailConfirmedAsync(user.Id))
+            if (user == null || !await _loginAppService.EmailConfirmado(new Guid(user.Id)))
                 return View("ForgotPasswordConfirmation");
 
             var code = await _userManager.GeneratePasswordResetTokenAsync(user.Id);
 
-            var callbackUrl = Url.Action("ResetPassword", "Account", new {userId = user.Id, code}, Request.Url?.Scheme);
+            var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code }, Request.Url?.Scheme);
 
             await _userManager.SendEmailAsync(user.Id, "Esqueci minha senha", "Por favor altere sua senha clicando aqui: <a href='" + callbackUrl + "'></a>");
 
@@ -198,10 +196,12 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return View();
         }
 
+        #endregion
+
         [AllowAnonymous]
-        public ActionResult ResetPassword(string code)
+        public ActionResult ResetPassword(string codigoSeguranca)
         {
-            return code == null ? View("Error") : View();
+            return codigoSeguranca == null ? View("Error") : View();
         }
 
         [HttpPost]
@@ -211,13 +211,17 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
-            var user = await _userManager.FindByNameAsync(model.Email);
+
+            var user = await _loginAppService.ObterUsuario(model.Email);
             if (user == null)
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
-            var result = await _userManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+
+            var result = await _loginAppService.ResetarSenha(user.Id, model.Code, model.Password);
             if (result.Succeeded)
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
+
             AddErrors(result);
+
             return View();
         }
 
@@ -232,8 +236,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
-            return new ChallengeResult(provider,
-                Url.Action("ExternalLoginCallback", "Account", new {ReturnUrl = returnUrl}));
+            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
         }
 
         [AllowAnonymous]
@@ -246,10 +249,10 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(userId);
 
-            var factorOptions = userFactors.Select(purpose => new SelectListItem {Text = purpose, Value = purpose})
+            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose })
                 .ToList();
 
-            return View(new SendCodeViewModel {Providers = factorOptions, ReturnUrl = returnUrl, UserId = userId});
+            return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, UserId = userId });
         }
 
         [HttpPost]
@@ -264,7 +267,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 return View("Error");
 
             return RedirectToAction("VerifyCode",
-                new {Provider = model.SelectedProvider, model.ReturnUrl, userId = model.UserId});
+                new { Provider = model.SelectedProvider, model.ReturnUrl, userId = model.UserId });
         }
 
         [AllowAnonymous]
@@ -275,7 +278,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (loginInfo == null)
                 return RedirectToAction("Login");
 
-            var user = await _userManager.FindAsync(loginInfo.Login);
+            var user = await _loginAppService.ObterUsuario(loginInfo.Login);
 
             // Logar caso haja um login externo e já esteja logado neste provedor de login
             var result = await _signInManager.ExternalSignInAsync(loginInfo, false);
@@ -289,7 +292,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new {ReturnUrl = returnUrl});
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
                 case SignInStatus.Failure:
                 default:
                     // Se ele nao tem uma conta solicite que crie uma
@@ -330,7 +333,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 var info = await AuthenticationManager.GetExternalLoginInfoAsync();
                 if (info == null)
                     return View("ExternalLoginFailure");
-                var user = new ApplicationUser {UserName = model.Email, Email = model.Email};
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -369,11 +372,9 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             var clientKey = Request.Browser.Type;
 
-            var user = _userManager.FindById(User.Identity.GetUserId());
+            var user = await _loginAppService.ObterUsuario(User.Identity.GetUserId());
 
-            await _userManager.SignOutClientAsync(user, clientKey);
-
-            AuthenticationManager.SignOut();
+            await _loginAppService.EfetuarLogoff(user, clientKey, AuthenticationManager);
         }
 
         [HttpPost]
@@ -389,11 +390,11 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SignOutClient(int clientId)
         {
-            var user = _userManager.FindById(User.Identity.GetUserId());
-            var client = user.Clients.SingleOrDefault(c => c.Id == clientId);
+            var usuario = _loginAppService.ObterUsuario(User.Identity.GetUserId());
+            var client = usuario.Result.Clients.SingleOrDefault(c => c.Id == clientId);
             if (client != null)
-                user.Clients.Remove(client);
-            _userManager.Update(user);
+                usuario.Result.Clients.Remove(client);
+            _userManager.Update(usuario);
             return RedirectToAction("Index", "Home");
         }
 
@@ -412,25 +413,20 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
         internal class ChallengeResult : HttpUnauthorizedResult
         {
-            public ChallengeResult(string provider, string redirectUri)
-                : this(provider, redirectUri, null)
-            {
-            }
+            private string LoginProvider { get; }
+            private string RedirectUri { get; }
+            private string UserId { get; }
 
-            public ChallengeResult(string provider, string redirectUri, string userId)
+            public ChallengeResult(string provider, string redirectUri, string userId = null)
             {
                 LoginProvider = provider;
                 RedirectUri = redirectUri;
                 UserId = userId;
             }
 
-            public string LoginProvider { get; set; }
-            public string RedirectUri { get; set; }
-            public string UserId { get; set; }
-
             public override void ExecuteResult(ControllerContext context)
             {
-                var properties = new AuthenticationProperties {RedirectUri = RedirectUri};
+                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
                 if (UserId != null)
                     properties.Dictionary[XsrfKey] = UserId;
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);

@@ -21,8 +21,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
-
-
+        
         // GET: /Roles/
         public ActionResult Index()
         {

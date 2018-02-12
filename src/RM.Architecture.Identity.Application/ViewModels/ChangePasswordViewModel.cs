@@ -17,7 +17,7 @@ namespace RM.Architecture.Identity.Application.ViewModels
 
         [DataType(DataType.Password)]
         [Display(Name = "Repita Nova Senha")]
-        [Compare("NewPassword", ErrorMessage = "As senhas não se coincidem.")]
+        [Compare("NewPassword", ErrorMessage = "As senhas não coincidem.")]
         public string ConfirmPassword { get; set; }
     }
 }

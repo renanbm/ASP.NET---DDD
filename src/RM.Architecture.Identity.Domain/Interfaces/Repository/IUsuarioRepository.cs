@@ -6,8 +6,8 @@ namespace RM.Architecture.Identity.Domain.Interfaces.Repository
 {
     public interface IUsuarioRepository : IDisposable
     {
-        Usuario ObterPorId(string id);
-        IEnumerable<Usuario> ObterTodos();
+        Usuario ObterUsuario(string id);
+        IEnumerable<Usuario> ListarUsuarios();
         void DesativarLock(string id);
     }
 }

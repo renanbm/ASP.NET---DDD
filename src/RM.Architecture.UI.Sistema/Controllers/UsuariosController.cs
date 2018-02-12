@@ -16,13 +16,13 @@ namespace RM.Architecture.UI.Sistema.Controllers
         // GET: Usuarios
         public ActionResult Index()
         {
-            return View(_usuarioRepository.ObterTodos());
+            return View(_usuarioRepository.ListarUsuarios());
         }
 
         // GET: Usuarios/Details/5
         public ActionResult Details(string id)
         {
-            return View(_usuarioRepository.ObterPorId(id));
+            return View(_usuarioRepository.ObterUsuario(id));
         }
 
         public ActionResult DesativarLock(string id)
