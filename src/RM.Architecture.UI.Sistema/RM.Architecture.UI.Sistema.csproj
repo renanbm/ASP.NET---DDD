@@ -294,9 +294,9 @@
     <Content Include="Views\RolesAdmin\Index.cshtml" />
     <Content Include="Views\Usuarios\Details.cshtml" />
     <Content Include="Views\Usuarios\Index.cshtml" />
-    <Content Include="Views\ClaimsAdmin\CreateClaim.cshtml" />
+    <Content Include="Views\ClaimsAdmin\IncluirClaim.cshtml" />
     <Content Include="Views\ClaimsAdmin\Index.cshtml" />
-    <Content Include="Views\ClaimsAdmin\SetUserClaim.cshtml" />
+    <Content Include="Views\ClaimsAdmin\IncluirClaimUsuario.cshtml" />
     <Content Include="Views\Home\SignOut.cshtml" />
     <Content Include="Views\UsersAdmin\Create.cshtml" />
     <Content Include="Views\UsersAdmin\Delete.cshtml" />

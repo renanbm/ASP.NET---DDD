@@ -1,11 +1,8 @@
-﻿using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using RM.Architecture.Identity.Application.Interfaces;
-using RM.Architecture.Identity.Domain.Interfaces.Repository;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
@@ -13,36 +10,17 @@ namespace RM.Architecture.Identity.Application.Services
 {
     public class LoginAppService : ILoginAppService
     {
-        #region [Variáveis Locais]
-
         private readonly ApplicationSignInManager _signInManager;
         private readonly ApplicationUserManager _userManager;
-        private readonly IUsuarioRepository _usuarioRepository;
-
-        #endregion
-
-        #region [Construtor]
-
-        public LoginAppService(ApplicationSignInManager signInManager, ApplicationUserManager userManager, IUsuarioRepository usuarioRepository)
+        private readonly IClaimsAppService _claimsAppService;
+        
+        public LoginAppService(ApplicationSignInManager signInManager, ApplicationUserManager userManager, IClaimsAppService claimsAppService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _usuarioRepository = usuarioRepository;
+            _claimsAppService = claimsAppService;
         }
 
-        #endregion
-
-        #region [Funcionalidades => Senha]
-
-        public async Task<IdentityResult> ResetarSenha(string codUsuario, string codigoSeguranca, string novaSenha)
-        {
-            return await _userManager.ResetPasswordAsync(codUsuario, codigoSeguranca, novaSenha);
-        }
-
-        #endregion
-
-        #region [Funcionalidades => Login]
-        
         public async Task<SignInStatus> ObterStatusLogin(string email, string senha, bool rememberMe)
         {
             return await _signInManager.PasswordSignInAsync(email, senha, rememberMe, true);
@@ -59,7 +37,7 @@ namespace RM.Architecture.Identity.Application.Services
 
             await ResetarContadorTentativasLogin(usuario);
 
-            var claimsExternos = await ObterClaimsExternos(authenticationManager);
+            var claimsExternos = await _claimsAppService.ObterClaimsExternos(authenticationManager);
 
             authenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie, DefaultAuthenticationTypes.TwoFactorCookie, DefaultAuthenticationTypes.ApplicationCookie);
 
@@ -70,15 +48,6 @@ namespace RM.Architecture.Identity.Application.Services
             );
         }
 
-        private async Task ResetarContadorTentativasLogin(ApplicationUser usuario)
-        {
-            await _userManager.ResetAccessFailedCountAsync(usuario.CurrentClientId);
-        }
-
-        #endregion
-
-        #region [Funcionalidades => Logoff]
-
         public async Task EfetuarLogoff(ApplicationUser usuario, string clientKey, IAuthenticationManager authenticationManager)
         {
             await _userManager.SignOutClientAsync(usuario, clientKey);
@@ -86,6 +55,14 @@ namespace RM.Architecture.Identity.Application.Services
             authenticationManager.SignOut();
         }
 
-        #endregion
+        public async Task<IdentityResult> ResetarSenha(string codUsuario, string codigoSeguranca, string novaSenha)
+        {
+            return await _userManager.ResetPasswordAsync(codUsuario, codigoSeguranca, novaSenha);
+        }
+
+        private async Task ResetarContadorTentativasLogin(ApplicationUser usuario)
+        {
+            await _userManager.ResetAccessFailedCountAsync(usuario.CurrentClientId);
+        }
     }
 }

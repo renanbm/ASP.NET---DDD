@@ -12,9 +12,12 @@ namespace RM.Architecture.Identity.Infra.Data.Context
 
         public DbSet<Usuario> Usuarios { get; set; }
 
+        public DbSet<Claims> Claims { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Configurations.Add(new UsuarioConfig());
+            modelBuilder.Configurations.Add(new ClaimsConfig());
 
             base.OnModelCreating(modelBuilder);
         }

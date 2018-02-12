@@ -13,13 +13,11 @@ namespace RM.Architecture.UI.Sistema.Controllers
     [Authorize]
     public class ManageController : Controller
     {
-        private readonly ApplicationSignInManager _signInManager;
         private readonly ApplicationUserManager _userManager;
 
-        public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        public ManageController(ApplicationUserManager userManager)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         //

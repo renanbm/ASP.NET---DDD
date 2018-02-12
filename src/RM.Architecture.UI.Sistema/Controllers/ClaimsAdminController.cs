@@ -1,57 +1,50 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
+﻿using System.Web.Mvc;
 using RM.Architecture.Core.Infra.CrossCutting.MvcFilters;
+using RM.Architecture.Identity.Application.Interfaces;
 using RM.Architecture.Identity.Application.ViewModels;
-using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
-using RM.Architecture.Identity.Infra.CrossCuting.Identity.Context;
-using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
 namespace RM.Architecture.UI.Sistema.Controllers
 {
     [ClaimsAuthorize("AdmClaims", "True")]
     public class ClaimsAdminController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly ApplicationUserManager _userManager;
+        private readonly IClaimsAppService _claimsAppService;
+        private readonly IUsuarioAppService _usuarioAppService;
 
-        public ClaimsAdminController(ApplicationDbContext dbContext, ApplicationUserManager userManager)
+        public ClaimsAdminController(IClaimsAppService claimsAppService, IUsuarioAppService usuarioAppService)
         {
-            _dbContext = dbContext;
-            _userManager = userManager;
+            _claimsAppService = claimsAppService;
+            _usuarioAppService = usuarioAppService;
         }
 
-        // GET: ClaimsAdmin
         public ActionResult Index()
         {
-            return View(_dbContext.Claims.ToList());
+            var claims = _claimsAppService.ListarClaims();
+            return View(claims);
         }
 
-        // GET: ClaimsAdmin/SetUserClaim
-        public ActionResult SetUserClaim(string id)
+        public ActionResult IncluirClaimUsuario(string id)
         {
             ViewBag.Type = new SelectList
             (
-                _dbContext.Claims.ToList(),
+                _claimsAppService.ListarClaims(),
                 "Name",
                 "Name"
             );
 
-            ViewBag.User = _userManager.FindById(id);
+            ViewBag.User = _usuarioAppService.ObterUsuario(id);
 
             return View();
         }
 
-        // POST: ClaimsAdmin/SetUserClaim
         [HttpPost]
-        public ActionResult SetUserClaim(ClaimViewModel claim, string id)
+        public ActionResult IncluirClaimUsuario(ClaimViewModel claim, string id)
         {
             try
             {
-                _userManager.AddClaimAsync(id, new Claim(claim.Type, claim.Value));
+                _claimsAppService.IncluirClaimUsuario(id, claim);
 
-                return RedirectToAction("Details", "UsersAdmin", new {id});
+                return RedirectToAction("Details", "UsersAdmin", new { id });
             }
             catch
             {
@@ -59,23 +52,18 @@ namespace RM.Architecture.UI.Sistema.Controllers
             }
         }
 
-        // GET: ClaimsAdmin/CreateClaim
-        public ActionResult CreateClaim()
+        public ActionResult IncluirClaim()
         {
             return View();
         }
 
-        // POST: ClaimsAdmin/CreateClaim
         [HttpPost]
-        public ActionResult CreateClaim(Claims claim)
+        public ActionResult IncluirClaim(ClaimViewModel claim)
         {
             try
             {
                 if (ModelState.IsValid)
-                {
-                    _dbContext.Claims.Add(claim);
-                    _dbContext.SaveChanges();
-                }
+                    _claimsAppService.IncluirClaim(claim);
 
                 return RedirectToAction("Index");
             }
