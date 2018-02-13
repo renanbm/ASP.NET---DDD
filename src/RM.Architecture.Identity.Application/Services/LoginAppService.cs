@@ -100,6 +100,11 @@ namespace RM.Architecture.Identity.Application.Services
             return await _userManager.RemoveLoginAsync(codUsuario, login);
         }
 
+        public Task<string> GerarTokenCelular(string codUsuario, string numeroCelular)
+        {
+            return _userManager.GenerateChangePhoneNumberTokenAsync(codUsuario, numeroCelular);
+        }
+
         private async Task ResetarContadorTentativasLogin(ApplicationUser usuario)
         {
             await _userManager.ResetAccessFailedCountAsync(usuario.CurrentClientId);

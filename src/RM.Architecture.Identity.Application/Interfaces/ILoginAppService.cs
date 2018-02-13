@@ -35,5 +35,7 @@ namespace RM.Architecture.Identity.Application.Interfaces
         Task<IdentityResult> AdicionarLogin(string codUsuario, UserLoginInfo login);
 
         Task<IdentityResult> RemoverLogin(string codUsuario, UserLoginInfo login);
+
+        Task<string> GerarTokenCelular(string codUsuario, string numeroCelular);
     }
 }

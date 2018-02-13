@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using RM.Architecture.Identity.Application.Interfaces;
@@ -100,6 +98,21 @@ namespace RM.Architecture.Identity.Application.Services
         public async Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone)
         {
             return await _userManager.SetPhoneNumberAsync(codUsuario, telefone);
+        }
+
+        public bool SmsService()
+        {
+            return _userManager.SmsService == null;
+        }
+
+        public Task EnviarSms(IdentityMessage mensagem)
+        {
+            return _userManager.SmsService.SendAsync(mensagem);
+        }
+
+        public Task EnviarEmail(string codUsuario, string assunto, string mensagem)
+        {
+            return _userManager.SendEmailAsync(codUsuario, assunto, mensagem);
         }
     }
 }

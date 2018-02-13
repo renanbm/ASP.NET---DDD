@@ -73,9 +73,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 message = ManageMessageId.RemoveLoginSuccess;
             }
             else
-            {
                 message = ManageMessageId.Error;
-            }
 
             return RedirectToAction("ManageLogins", new { Message = message });
         }
@@ -91,17 +89,20 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
-            // Gerar um token e enviar
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), model.Number);
-            if (_userManager.SmsService != null)
+            
+            var code = await _loginAppService.GerarTokenCelular(User.Identity.GetUserId(), model.Number);
+
+            if (_usuarioAppService.SmsService())
+                return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
+
+            var message = new IdentityMessage
             {
-                var message = new IdentityMessage
-                {
-                    Destination = model.Number,
-                    Body = "O código de segurança é: " + code
-                };
-                await _userManager.SmsService.SendAsync(message);
-            }
+                Destination = model.Number,
+                Body = "O código de segurança é: " + code
+            };
+
+            await _usuarioAppService.EnviarSms(message);
+
             return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
         }
 

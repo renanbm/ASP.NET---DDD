@@ -22,13 +22,13 @@ namespace RM.Architecture.Identity.Application.Interfaces
         void DesativarLock(string id);
 
         Task<ApplicationUser> ObterUsuario(string username);
-        
+
         Task<ApplicationUser> ObterUsuario(string username, string senha);
-        
+
         Task<ApplicationUser> ObterUsuario(UserLoginInfo loginInfo);
 
         Task<bool> EmailConfirmado(Guid codUsuario);
-        
+
         Task<IdentityResult> ConfirmarEmail(Guid codUsuario, string codigoVerificacao);
 
         Task<IdentityResult> RemoverUsuario(ApplicationUser usuario);
@@ -40,5 +40,11 @@ namespace RM.Architecture.Identity.Application.Interfaces
         Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone, string token);
 
         Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone);
+
+        bool SmsService();
+
+        Task EnviarSms(IdentityMessage mensagem);
+
+        Task EnviarEmail(string codUsuario, string assunto, string mensagem);
     }
 }
