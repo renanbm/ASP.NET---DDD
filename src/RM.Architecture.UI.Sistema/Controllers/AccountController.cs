@@ -138,7 +138,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (codUsuario == null || codigoVerificacao == null)
                 return View("Error");
 
-            var result = await _loginAppService.ConfirmarEmail(new Guid(codUsuario), codigoVerificacao);
+            var result = await _usuarioAppService.ConfirmarEmail(new Guid(codUsuario), codigoVerificacao);
 
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
@@ -320,7 +320,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 var result = await _usuarioAppService.IncluirUsuario(usuario);
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(usuario.Id, info.Login);
+                    result = await _loginAppService.AdicionarLogin(usuario.Id, info.Login);
                     if (result.Succeeded)
                     {
                         await _loginAppService.EfetuarLogin(usuario, false, false);
@@ -373,7 +373,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SignOutClient(int clientId)
         {
-            var usuario = _loginAppService.ObterUsuario(User.Identity.GetUserId());
+            var usuario = _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
             var client = usuario.Result.Clients.SingleOrDefault(c => c.Id == clientId);
             if (client != null)
                 usuario.Result.Clients.Remove(client);

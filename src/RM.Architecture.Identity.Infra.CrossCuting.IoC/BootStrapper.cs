@@ -26,6 +26,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.IoC
             // APP
             container.Register<IUsuarioAppService, UsuarioAppService>(Lifestyle.Scoped);
             container.Register<ILoginAppService, LoginAppService>(Lifestyle.Scoped);
+            container.Register<IAuthorizationAppService, AuthorizationAppService>(Lifestyle.Scoped);
             
             // Data
             container.Register<IUsuarioRepository, UsuarioRepository>(Lifestyle.Scoped);

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
@@ -31,6 +32,11 @@ namespace RM.Architecture.Identity.Application.Services
             return await _signInManager.TwoFactorSignInAsync(provedor, codigo, false, rememberMe);
         }
 
+        public async Task<IList<UserLoginInfo>> ConsultarLoginsUsuario(string codUsuario)
+        {
+            return await _userManager.GetLoginsAsync(codUsuario);
+        }
+
         public async Task EfetuarLogin(ApplicationUser usuario, bool rememberMe, IAuthenticationManager authenticationManager, string clientKey)
         {
             await _userManager.SignInClientAsync(usuario, clientKey);
@@ -48,6 +54,11 @@ namespace RM.Architecture.Identity.Application.Services
             );
         }
 
+        public async Task<IdentityResult> EfetuarLogin(ApplicationUser usuario, string clientKey)
+        {
+            return await _userManager.SignInClientAsync(usuario, clientKey);
+        }
+
         public async Task EfetuarLogoff(ApplicationUser usuario, string clientKey, IAuthenticationManager authenticationManager)
         {
             await _userManager.SignOutClientAsync(usuario, clientKey);
@@ -55,9 +66,38 @@ namespace RM.Architecture.Identity.Application.Services
             authenticationManager.SignOut();
         }
 
+        public async Task<IdentityResult> IncluirSenha(string codUsuario, string senha)
+        {
+            return await _userManager.AddPasswordAsync(codUsuario, senha);
+        }
+
         public async Task<IdentityResult> ResetarSenha(string codUsuario, string codigoSeguranca, string novaSenha)
         {
             return await _userManager.ResetPasswordAsync(codUsuario, codigoSeguranca, novaSenha);
+        }
+
+        public async Task<IdentityResult> AlterarSenha(string usuario, string senhaAntiga, string senhaNova)
+        {
+            return await _userManager.ChangePasswordAsync(usuario, senhaAntiga, senhaNova);
+        }
+
+        public async Task<IdentityResult> HabilitarTwoFactorAuthentication(string codUsuario, bool habilitado)
+        {
+            return await _userManager.SetTwoFactorEnabledAsync(codUsuario, habilitado);
+        }
+
+        public async Task<bool> TwoFactorAuthentication(string codUsuario)
+        {
+            return await _userManager.GetTwoFactorEnabledAsync(codUsuario);
+        }
+
+        public async Task<IdentityResult> AdicionarLogin(string codUsuario, UserLoginInfo login)
+        {
+            return await _userManager.AddLoginAsync(codUsuario, login);
+        }
+        public async Task<IdentityResult> RemoverLogin(string codUsuario, UserLoginInfo login)
+        {
+            return await _userManager.RemoveLoginAsync(codUsuario, login);
         }
 
         private async Task ResetarContadorTentativasLogin(ApplicationUser usuario)

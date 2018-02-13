@@ -14,10 +14,12 @@ namespace RM.Architecture.UI.Sistema.Controllers
     public class ManageController : Controller
     {
         private readonly IUsuarioAppService _usuarioAppService;
+        private readonly ILoginAppService _loginAppService;
 
-        public ManageController(IUsuarioAppService usuarioAppService)
+        public ManageController(IUsuarioAppService usuarioAppService, ILoginAppService loginAppService)
         {
             _usuarioAppService = usuarioAppService;
+            _loginAppService = loginAppService;
         }
 
         public async Task<ActionResult> Index(ManageMessageId? message)
@@ -39,10 +41,10 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             var model = new IndexViewModel
             {
-                HasPassword = HasPassword(),
-                PhoneNumber = await _userManager.GetPhoneNumberAsync(User.Identity.GetUserId()),
-                TwoFactor = await _userManager.GetTwoFactorEnabledAsync(User.Identity.GetUserId()),
-                Logins = await _userManager.GetLoginsAsync(User.Identity.GetUserId()),
+                HasPassword = HasPassword().Result,
+                PhoneNumber = await _usuarioAppService.ObterTelefoneUsuario(User.Identity.GetUserId()),
+                TwoFactor = await _loginAppService.TwoFactorAuthentication(User.Identity.GetUserId()),
+                Logins = await _loginAppService.ConsultarLoginsUsuario(User.Identity.GetUserId()),
                 BrowserRemembered =
                     await AuthenticationManager.TwoFactorBrowserRememberedAsync(User.Identity.GetUserId())
             };
@@ -51,8 +53,8 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
         public ActionResult RemoveLogin()
         {
-            var linkedAccounts = _userManager.GetLogins(User.Identity.GetUserId());
-            ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
+            var linkedAccounts = _loginAppService.ConsultarLoginsUsuario(User.Identity.GetUserId()).Result;
+            ViewBag.ShowRemoveButton = HasPassword().Result || linkedAccounts.Count > 1;
             return View(linkedAccounts);
         }
 
@@ -61,8 +63,8 @@ namespace RM.Architecture.UI.Sistema.Controllers
         public async Task<ActionResult> RemoveLogin(string loginProvider, string providerKey)
         {
             ManageMessageId? message;
-            var result = await _userManager.RemoveLoginAsync(User.Identity.GetUserId(),
-                new UserLoginInfo(loginProvider, providerKey));
+            var result = await _loginAppService.RemoverLogin(User.Identity.GetUserId(), new UserLoginInfo(loginProvider, providerKey));
+
             if (result.Succeeded)
             {
                 var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
@@ -74,7 +76,8 @@ namespace RM.Architecture.UI.Sistema.Controllers
             {
                 message = ManageMessageId.Error;
             }
-            return RedirectToAction("ManageLogins", new {Message = message});
+
+            return RedirectToAction("ManageLogins", new { Message = message });
         }
 
         public ActionResult AddPhoneNumber()
@@ -99,15 +102,14 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 };
                 await _userManager.SmsService.SendAsync(message);
             }
-            return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
+            return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
         }
 
         [HttpPost]
         public ActionResult RememberBrowser()
         {
-            var rememberBrowserIdentity =
-                AuthenticationManager.CreateTwoFactorRememberBrowserIdentity(User.Identity.GetUserId());
-            AuthenticationManager.SignIn(new AuthenticationProperties {IsPersistent = true}, rememberBrowserIdentity);
+            var rememberBrowserIdentity = AuthenticationManager.CreateTwoFactorRememberBrowserIdentity(User.Identity.GetUserId());
+            AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = true }, rememberBrowserIdentity);
             return RedirectToAction("Index", "Manage");
         }
 
@@ -121,20 +123,26 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [HttpPost]
         public async Task<ActionResult> EnableTfa()
         {
-            await _userManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId(), true);
+            await _loginAppService.HabilitarTwoFactorAuthentication(User.Identity.GetUserId(), true);
+
             var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
+
             if (user != null)
                 await SignInAsync(user, false);
+
             return RedirectToAction("Index", "Manage");
         }
 
         [HttpPost]
         public async Task<ActionResult> DisableTfa()
         {
-            await _userManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId(), false);
+            await _loginAppService.HabilitarTwoFactorAuthentication(User.Identity.GetUserId(), false);
+
             var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
+
             if (user != null)
                 await SignInAsync(user, false);
+
             return RedirectToAction("Index", "Manage");
         }
 
@@ -142,7 +150,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             return phoneNumber == null
                 ? View("Error")
-                : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
+                : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
         [HttpPost]
@@ -151,29 +159,37 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
-            var result =
-                await _userManager.ChangePhoneNumberAsync(User.Identity.GetUserId(), model.PhoneNumber, model.Code);
+
+            var result = await _usuarioAppService.AtualizarTelefone(User.Identity.GetUserId(), model.PhoneNumber, model.Code);
+
             if (result.Succeeded)
             {
                 var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
+
                 if (user != null)
                     await SignInAsync(user, false);
-                return RedirectToAction("Index", new {Message = ManageMessageId.AddPhoneSuccess});
+
+                return RedirectToAction("Index", new { Message = ManageMessageId.AddPhoneSuccess });
             }
-            // No caso de falha, reexibir a view. 
+
             ModelState.AddModelError("", "Falha ao adicionar telefone");
+
             return View(model);
         }
 
         public async Task<ActionResult> RemovePhoneNumber()
         {
-            var result = await _userManager.SetPhoneNumberAsync(User.Identity.GetUserId(), null);
+            var result = await _usuarioAppService.AtualizarTelefone(User.Identity.GetUserId(), null);
+
             if (!result.Succeeded)
-                return RedirectToAction("Index", new {Message = ManageMessageId.Error});
+                return RedirectToAction("Index", new { Message = ManageMessageId.Error });
+
             var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
+
             if (user != null)
                 await SignInAsync(user, false);
-            return RedirectToAction("Index", new {Message = ManageMessageId.RemovePhoneSuccess});
+
+            return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
 
         public ActionResult ChangePassword()
@@ -188,13 +204,13 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (!ModelState.IsValid)
                 return View(model);
             var result =
-                await _userManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+                await _loginAppService.AlterarSenha(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
             if (result.Succeeded)
             {
                 var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
                 if (user != null)
                     await SignInAsync(user, false);
-                return RedirectToAction("Index", new {Message = ManageMessageId.ChangePasswordSuccess});
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangePasswordSuccess });
             }
             AddErrors(result);
             return View(model);
@@ -211,31 +227,33 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var result = await _userManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
+            var result = await _loginAppService.IncluirSenha(User.Identity.GetUserId(), model.NewPassword);
+
             if (result.Succeeded)
             {
                 var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
                 if (user != null)
                     await SignInAsync(user, false);
-                return RedirectToAction("Index", new {Message = ManageMessageId.SetPasswordSuccess});
+                return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
             }
-            AddErrors(result);
 
+            AddErrors(result);
             return View(model);
         }
 
         public async Task<ActionResult> ManageLogins(ManageMessageId? message)
         {
-            ViewBag.StatusMessage =
-                message == ManageMessageId.RemoveLoginSuccess
-                    ? "O Login foi removido."
-                    : message == ManageMessageId.Error
-                        ? "Ocorreu um erro."
-                        : "";
+            ViewBag.StatusMessage = message == ManageMessageId.RemoveLoginSuccess
+                                    ? "O Login foi removido."
+                                    : message == ManageMessageId.Error
+                                    ? "Ocorreu um erro."
+                                    : "";
+
             var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
             if (user == null)
                 return View("Error");
-            var userLogins = await _userManager.GetLoginsAsync(User.Identity.GetUserId());
+
+            var userLogins = await _loginAppService.ConsultarLoginsUsuario(User.Identity.GetUserId());
             var otherLogins = AuthenticationManager.GetExternalAuthenticationTypes()
                 .Where(auth => userLogins.All(ul => auth.AuthenticationType != ul.LoginProvider)).ToList();
             ViewBag.ShowRemoveButton = user.PasswordHash != null || userLogins.Count > 1;
@@ -258,15 +276,17 @@ namespace RM.Architecture.UI.Sistema.Controllers
         public async Task<ActionResult> LinkLoginCallback()
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
+
             if (loginInfo == null)
-                return RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
-            var result = await _userManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
+                return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
+
+            var result = await _loginAppService.AdicionarLogin(User.Identity.GetUserId(), loginInfo.Login);
+
             return result.Succeeded
                 ? RedirectToAction("ManageLogins")
-                : RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
+                : RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
         }
 
-        
         private const string XsrfKey = "XsrfId";
 
         private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
@@ -274,11 +294,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         private async Task SignInAsync(ApplicationUser user, bool isPersistent)
         {
             var clientKey = Request.Browser.Type;
-            await _userManager.SignInClientAsync(user, clientKey);
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie,
-                DefaultAuthenticationTypes.TwoFactorCookie);
-            AuthenticationManager.SignIn(new AuthenticationProperties {IsPersistent = isPersistent},
-                await user.GenerateUserIdentityAsync(_userManager));
+            await _loginAppService.EfetuarLogin(user, isPersistent, AuthenticationManager, clientKey);
         }
 
         private void AddErrors(IdentityResult result)

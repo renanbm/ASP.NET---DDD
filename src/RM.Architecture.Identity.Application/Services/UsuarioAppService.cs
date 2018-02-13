@@ -39,6 +39,11 @@ namespace RM.Architecture.Identity.Application.Services
             return _usuarioRepository.ObterUsuario(codUsuario);
         }
 
+        public async Task<string> ObterTelefoneUsuario(string codUsuario)
+        {
+            return await _userManager.GetPhoneNumberAsync(codUsuario);
+        }
+
         public void DesativarLock(string id)
         {
             _usuarioRepository.DesativarLock(id);
@@ -86,6 +91,15 @@ namespace RM.Architecture.Identity.Application.Services
         public async Task<IdentityResult> IncluirUsuario(ApplicationUser usuario)
         {
             return await _userManager.CreateAsync(usuario);
+        }
+
+        public async Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone, string token)
+        {
+            return await _userManager.ChangePhoneNumberAsync(codUsuario, telefone, token);
+        }
+        public async Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone)
+        {
+            return await _userManager.SetPhoneNumberAsync(codUsuario, telefone);
         }
     }
 }

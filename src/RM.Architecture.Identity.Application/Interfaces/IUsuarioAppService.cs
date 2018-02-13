@@ -15,6 +15,8 @@ namespace RM.Architecture.Identity.Application.Interfaces
 
         Usuario ObterUsuarioRepo(string codUsuario);
 
+        Task<string> ObterTelefoneUsuario(string codUsuario);
+
         Task<ApplicationUser> ObterUsuarioPorEmail(string email);
 
         void DesativarLock(string id);
@@ -34,5 +36,9 @@ namespace RM.Architecture.Identity.Application.Interfaces
         Task<IdentityResult> IncluirUsuarioSenha(ApplicationUser usuario, string senha);
 
         Task<IdentityResult> IncluirUsuario(ApplicationUser usuario);
+
+        Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone, string token);
+
+        Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone);
     }
 }
