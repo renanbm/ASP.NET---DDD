@@ -107,7 +107,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(string id, string deleteUser)
+        public async Task<ActionResult> DeleteConfirmed(string id)
         {
             if (!ModelState.IsValid) return View();
 
