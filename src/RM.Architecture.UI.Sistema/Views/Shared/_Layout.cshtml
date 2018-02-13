@@ -28,7 +28,7 @@
                     {
                         if (User.IsInRole("Admin"))
                         {
-                            <li>@Html.ActionLink("Admin Roles", "Index", "RolesAdmin")</li>
+                            <li>@Html.ActionLink("Admin Roles", "Index", "Role")</li>
                         }
 
                         var claimsIdentity = User.Identity as ClaimsIdentity;
@@ -47,7 +47,7 @@
                         {
                             if (claim.Value == "True")
                             {
-                                <li>@Html.ActionLink("Admin Claims", "Index", "ClaimsAdmin")</li>
+                                <li>@Html.ActionLink("Admin Claims", "Index", "Claims")</li>
                             }
                         }
                     }

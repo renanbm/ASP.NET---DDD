@@ -6,20 +6,20 @@ using RM.Architecture.Identity.Application.ViewModels;
 namespace RM.Architecture.UI.Sistema.Controllers
 {
     [ClaimsAuthorize("AdmClaims", "True")]
-    public class ClaimsAdminController : Controller
+    public class ClaimsController : Controller
     {
-        private readonly IClaimsAppService _claimsAppService;
+        private readonly IAuthorizationAppService _authorizationAppService;
         private readonly IUsuarioAppService _usuarioAppService;
 
-        public ClaimsAdminController(IClaimsAppService claimsAppService, IUsuarioAppService usuarioAppService)
+        public ClaimsController(IAuthorizationAppService authorizationAppService, IUsuarioAppService usuarioAppService)
         {
-            _claimsAppService = claimsAppService;
+            _authorizationAppService = authorizationAppService;
             _usuarioAppService = usuarioAppService;
         }
 
         public ActionResult Index()
         {
-            var claims = _claimsAppService.ListarClaims();
+            var claims = _authorizationAppService.ListarClaims();
             return View(claims);
         }
 
@@ -27,7 +27,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             ViewBag.Type = new SelectList
             (
-                _claimsAppService.ListarClaims(),
+                _authorizationAppService.ListarClaims(),
                 "Name",
                 "Name"
             );
@@ -42,7 +42,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             try
             {
-                _claimsAppService.IncluirClaimUsuario(id, claim);
+                _authorizationAppService.IncluirClaimUsuario(id, claim);
 
                 return RedirectToAction("Details", "UsersAdmin", new { id });
             }
@@ -63,7 +63,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             try
             {
                 if (ModelState.IsValid)
-                    _claimsAppService.IncluirClaim(claim);
+                    _authorizationAppService.IncluirClaim(claim);
 
                 return RedirectToAction("Index");
             }

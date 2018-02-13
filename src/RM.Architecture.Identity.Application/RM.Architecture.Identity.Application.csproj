@@ -90,11 +90,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\IClaimsAppService.cs" />
+    <Compile Include="Interfaces\IAuthorizationAppService.cs" />
     <Compile Include="Interfaces\ILoginAppService.cs" />
     <Compile Include="Interfaces\IUsuarioAppService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\ClaimsAppService.cs" />
+    <Compile Include="Services\AuthorizationAppService.cs" />
     <Compile Include="Services\UsuarioAppService.cs" />
     <Compile Include="Services\LoginAppService.cs" />
     <Compile Include="ViewModels\AddPhoneNumberViewModel.cs" />

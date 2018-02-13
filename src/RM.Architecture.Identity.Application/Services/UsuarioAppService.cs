@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using RM.Architecture.Identity.Application.Interfaces;
@@ -14,6 +16,11 @@ namespace RM.Architecture.Identity.Application.Services
         public UsuarioAppService(ApplicationUserManager userManager)
         {
             _userManager = userManager;
+        }
+
+        public IEnumerable<ApplicationUser> Listar()
+        {
+            return _userManager.Users.ToList();
         }
 
         public async Task<ApplicationUser> ObterUsuario(string username)

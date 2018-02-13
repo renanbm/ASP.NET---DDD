@@ -12,13 +12,13 @@ namespace RM.Architecture.Identity.Application.Services
     {
         private readonly ApplicationSignInManager _signInManager;
         private readonly ApplicationUserManager _userManager;
-        private readonly IClaimsAppService _claimsAppService;
+        private readonly IAuthorizationAppService _authorizationAppService;
         
-        public LoginAppService(ApplicationSignInManager signInManager, ApplicationUserManager userManager, IClaimsAppService claimsAppService)
+        public LoginAppService(ApplicationSignInManager signInManager, ApplicationUserManager userManager, IAuthorizationAppService authorizationAppService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _claimsAppService = claimsAppService;
+            _authorizationAppService = authorizationAppService;
         }
 
         public async Task<SignInStatus> ObterStatusLogin(string email, string senha, bool rememberMe)
@@ -37,7 +37,7 @@ namespace RM.Architecture.Identity.Application.Services
 
             await ResetarContadorTentativasLogin(usuario);
 
-            var claimsExternos = await _claimsAppService.ObterClaimsExternos(authenticationManager);
+            var claimsExternos = await _authorizationAppService.ObterClaimsExternos(authenticationManager);
 
             authenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie, DefaultAuthenticationTypes.TwoFactorCookie, DefaultAuthenticationTypes.ApplicationCookie);
 
