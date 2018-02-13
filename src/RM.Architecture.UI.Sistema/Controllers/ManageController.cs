@@ -65,7 +65,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 new UserLoginInfo(loginProvider, providerKey));
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+                var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
                 if (user != null)
                     await SignInAsync(user, false);
                 message = ManageMessageId.RemoveLoginSuccess;
@@ -122,7 +122,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         public async Task<ActionResult> EnableTfa()
         {
             await _userManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId(), true);
-            var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+            var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
             if (user != null)
                 await SignInAsync(user, false);
             return RedirectToAction("Index", "Manage");
@@ -132,7 +132,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         public async Task<ActionResult> DisableTfa()
         {
             await _userManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId(), false);
-            var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+            var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
             if (user != null)
                 await SignInAsync(user, false);
             return RedirectToAction("Index", "Manage");
@@ -155,7 +155,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 await _userManager.ChangePhoneNumberAsync(User.Identity.GetUserId(), model.PhoneNumber, model.Code);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+                var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
                 if (user != null)
                     await SignInAsync(user, false);
                 return RedirectToAction("Index", new {Message = ManageMessageId.AddPhoneSuccess});
@@ -170,7 +170,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             var result = await _userManager.SetPhoneNumberAsync(User.Identity.GetUserId(), null);
             if (!result.Succeeded)
                 return RedirectToAction("Index", new {Message = ManageMessageId.Error});
-            var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+            var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
             if (user != null)
                 await SignInAsync(user, false);
             return RedirectToAction("Index", new {Message = ManageMessageId.RemovePhoneSuccess});
@@ -191,7 +191,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 await _userManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+                var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
                 if (user != null)
                     await SignInAsync(user, false);
                 return RedirectToAction("Index", new {Message = ManageMessageId.ChangePasswordSuccess});
@@ -214,14 +214,13 @@ namespace RM.Architecture.UI.Sistema.Controllers
             var result = await _userManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+                var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
                 if (user != null)
                     await SignInAsync(user, false);
                 return RedirectToAction("Index", new {Message = ManageMessageId.SetPasswordSuccess});
             }
             AddErrors(result);
 
-            // No caso de falha, reexibir a view. 
             return View(model);
         }
 
@@ -233,7 +232,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                     : message == ManageMessageId.Error
                         ? "Ocorreu um erro."
                         : "";
-            var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+            var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
             if (user == null)
                 return View("Error");
             var userLogins = await _userManager.GetLoginsAsync(User.Identity.GetUserId());
@@ -288,20 +287,16 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 ModelState.AddModelError("", error);
         }
 
-        private bool HasPassword()
+        private async Task<bool> HasPassword()
         {
-            var user = _userManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-                return user.PasswordHash != null;
-            return false;
+            var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
+            return user?.PasswordHash != null;
         }
 
-        private bool HasPhoneNumber()
+        private async Task<bool> HasPhoneNumber()
         {
-            var user = _userManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-                return user.PhoneNumber != null;
-            return false;
+            var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
+            return user?.PhoneNumber != null;
         }
 
         public enum ManageMessageId

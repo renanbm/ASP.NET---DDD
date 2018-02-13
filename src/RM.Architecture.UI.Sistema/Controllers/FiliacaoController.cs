@@ -54,19 +54,13 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(ClienteEnderecoViewModel clienteEnderecoViewModel)
         {
-            if (ModelState.IsValid)
-            {
-                var clienteReturn = _filiacaoAppService.Adicionar(clienteEnderecoViewModel).ClienteViewModel;
-                if (!clienteReturn.ValidationResult.IsValid)
-                {
-                    foreach (var erro in clienteReturn.ValidationResult.Erros)
-                        ModelState.AddModelError(string.Empty, erro.Message);
+            if (!ModelState.IsValid) return View(clienteEnderecoViewModel);
 
-                    return View(clienteEnderecoViewModel);
-                }
+            var clienteReturn = _filiacaoAppService.Adicionar(clienteEnderecoViewModel).ClienteViewModel;
+            if (clienteReturn.ValidationResult.IsValid) return RedirectToAction("Index");
 
-                return RedirectToAction("Index");
-            }
+            foreach (var erro in clienteReturn.ValidationResult.Erros)
+                ModelState.AddModelError(string.Empty, erro.Message);
 
             return View(clienteEnderecoViewModel);
         }
@@ -92,12 +86,9 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(ClienteViewModel clienteViewModel)
         {
-            if (ModelState.IsValid)
-            {
-                _filiacaoAppService.Atualizar(clienteViewModel);
-                return RedirectToAction("Index");
-            }
-            return View(clienteViewModel);
+            if (!ModelState.IsValid) return View(clienteViewModel);
+            _filiacaoAppService.Atualizar(clienteViewModel);
+            return RedirectToAction("Index");
         }
 
         [Route("{id:guid}/excluir-cliente")]

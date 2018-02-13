@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using RM.Architecture.Identity.Application.Interfaces;
@@ -48,6 +49,11 @@ namespace RM.Architecture.Identity.Application.Services
             return await _userManager.FindByNameAsync(username);
         }
 
+        public async Task<ApplicationUser> ObterUsuarioPorEmail(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
         public async Task<ApplicationUser> ObterUsuario(string username, string senha)
         {
             return await _userManager.FindAsync(username, senha);
@@ -73,9 +79,13 @@ namespace RM.Architecture.Identity.Application.Services
             return await _userManager.DeleteAsync(usuario);
         }
 
-        public async Task<IdentityResult> IncluirUsuario(ApplicationUser usuario, string senha)
+        public async Task<IdentityResult> IncluirUsuarioSenha(ApplicationUser usuario, string senha)
         {
             return await _userManager.CreateAsync(usuario, senha);
+        }
+        public async Task<IdentityResult> IncluirUsuario(ApplicationUser usuario)
+        {
+            return await _userManager.CreateAsync(usuario);
         }
     }
 }

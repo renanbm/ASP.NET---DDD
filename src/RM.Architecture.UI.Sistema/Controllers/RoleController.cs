@@ -23,7 +23,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         public ActionResult Index()
         {
             var roles = _authorizationAppService.ListarRoles();
-            return View(roles);
+            return View(roles.Result);
         }
 
         public async Task<ActionResult> Details(string id)
@@ -35,7 +35,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             var users = new List<ApplicationUser>();
 
-            var usuarios = _usuarioAppService.Listar();
+            var usuarios = await _usuarioAppService.Listar();
 
             foreach (var user in usuarios)
                 if (await _authorizationAppService.UsuarioPossuiRole(user.Id, role.Name))
@@ -120,7 +120,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 return HttpNotFound();
 
             var result = await _authorizationAppService.Remover(role);
-            
+
             if (result.Succeeded)
                 return RedirectToAction("Index");
 

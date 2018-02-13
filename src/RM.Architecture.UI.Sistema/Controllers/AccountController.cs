@@ -15,27 +15,17 @@ namespace RM.Architecture.UI.Sistema.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        #region [Variáveis Locais]
-
         private readonly IUsuarioAppService _usuarioAppService;
         private readonly ILoginAppService _loginAppService;
 
         private const string XsrfKey = "XsrfId";
         private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
 
-        #endregion
-
-        #region [Construtor]
-
         public AccountController(ILoginAppService loginAppService, IUsuarioAppService usuarioAppService)
         {
             _loginAppService = loginAppService;
             _usuarioAppService = usuarioAppService;
         }
-
-        #endregion
-
-        #region [Login]
 
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
@@ -82,8 +72,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, UserId = userId });
         }
 
-        #endregion
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -97,7 +85,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    var user = _loginAppService.ObterUsuario(model.UserId);
+                    var user = _usuarioAppService.ObterUsuario(model.UserId);
                     await SignInAsync(user.Result, false);
                     return RedirectToLocal(model.ReturnUrl);
                 case SignInStatus.LockedOut:
@@ -107,8 +95,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
                     return View(model);
             }
         }
-
-        #region [Cadastro]
 
         [AllowAnonymous]
         public ActionResult Register()
@@ -131,7 +117,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 Email = model.Email
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _usuarioAppService.IncluirUsuarioSenha(user, model.Password);
 
             if (result.Succeeded)
             {
@@ -145,8 +131,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             return View(model);
         }
-
-        #endregion
 
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string codUsuario, string codigoVerificacao)
@@ -174,7 +158,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var user = await _loginAppService.ObterUsuario(model.Email);
+            var user = await _usuarioAppService.ObterUsuario(model.Email);
 
             if (user == null || !await _loginAppService.EmailConfirmado(new Guid(user.Id)))
                 return View("ForgotPasswordConfirmation");
@@ -212,7 +196,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = await _loginAppService.ObterUsuario(model.Email);
+            var user = await _usuarioAppService.ObterUsuario(model.Email);
             if (user == null)
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
 
@@ -278,7 +262,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (loginInfo == null)
                 return RedirectToAction("Login");
 
-            var user = await _loginAppService.ObterUsuario(loginInfo.Login);
+            var user = await _usuarioAppService.ObterUsuario(loginInfo.Login);
 
             // Logar caso haja um login externo e já esteja logado neste provedor de login
             var result = await _signInManager.ExternalSignInAsync(loginInfo, false);
@@ -286,14 +270,13 @@ namespace RM.Architecture.UI.Sistema.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    var userext = _userManager.FindByEmailAsync(user.Email);
+                    var userext = _usuarioAppService.ObterUsuarioPorEmail(user.Email);
                     await SignInAsync(userext.Result, false);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl });
-                case SignInStatus.Failure:
                 default:
                     // Se ele nao tem uma conta solicite que crie uma
 
@@ -333,16 +316,16 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 var info = await AuthenticationManager.GetExternalLoginInfoAsync();
                 if (info == null)
                     return View("ExternalLoginFailure");
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user);
+                var usuario = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var result = await _usuarioAppService.IncluirUsuario(usuario);
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user.Id, info.Login);
+                    result = await _userManager.AddLoginAsync(usuario.Id, info.Login);
                     if (result.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, false, false);
-                        var userext = _userManager.FindByEmailAsync(model.Email);
-                        await SignInAsync(userext.Result, false);
+                        await _loginAppService.EfetuarLogin(usuario, false, false);
+                        var userext = _usuarioAppService.ObterUsuarioPorEmail(model.Email);
+                        await _loginAppService.EfetuarLogin(userext.Result, false);
                         return RedirectToLocal(returnUrl);
                     }
                 }
@@ -372,7 +355,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             var clientKey = Request.Browser.Type;
 
-            var user = await _loginAppService.ObterUsuario(User.Identity.GetUserId());
+            var user = await _usuarioAppService.ObterUsuario(User.Identity.GetUserId());
 
             await _loginAppService.EfetuarLogoff(user, clientKey, AuthenticationManager);
         }

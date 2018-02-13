@@ -17,12 +17,14 @@ namespace RM.Architecture.UI.Sistema.Controllers
             _usuarioAppService = usuarioAppService;
         }
 
+        [HttpGet]
         public ActionResult Index()
         {
             var claims = _authorizationAppService.ListarClaims();
             return View(claims);
         }
 
+        [HttpGet]
         public ActionResult IncluirClaimUsuario(string id)
         {
             ViewBag.Type = new SelectList
@@ -52,6 +54,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             }
         }
 
+        [HttpGet]
         public ActionResult IncluirClaim()
         {
             return View();

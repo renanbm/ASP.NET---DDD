@@ -55,7 +55,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser {UserName = userViewModel.Email, Email = userViewModel.Email};
-                var adminResult = await _usuarioAppService.IncluirUsuario(user, userViewModel.Password);
+                var adminResult = await _usuarioAppService.IncluirUsuarioSenha(user, userViewModel.Password);
 
                 if (adminResult.Succeeded)
                 {

@@ -16,30 +16,40 @@ namespace RM.Architecture.Identity.Application.Services
 {
     public class AuthorizationAppService : IAuthorizationAppService
     {
-        private readonly IClaimsRepository _claimsRepository;
         private readonly ApplicationUserManager _userManager;
         private readonly ApplicationRoleManager _roleManager;
+        private readonly IClaimsRepository _claimsRepository;
 
-        public AuthorizationAppService(IClaimsRepository claimsRepository, ApplicationUserManager userManager, ApplicationRoleManager roleManager)
+        public AuthorizationAppService(ApplicationUserManager userManager, ApplicationRoleManager roleManager, IClaimsRepository claimsRepository)
         {
             _claimsRepository = claimsRepository;
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
-        public Task<List<IdentityRole>> ListarRoles()
+        public async Task<List<IdentityRole>> ListarRoles()
         {
-            return _roleManager.Roles.ToListAsync();
-        }
-
-        public Task<IdentityRole> ObterRole(string codRole)
-        {
-            return _roleManager.FindByIdAsync(codRole);
+            return await _roleManager.Roles.ToListAsync();
         }
 
         public List<Claims> ListarClaims()
         {
             return _claimsRepository.Listar();
+        }
+
+        public async Task<IdentityRole> ObterRole(string codRole)
+        {
+            return await _roleManager.FindByIdAsync(codRole);
+        }
+
+        public Task<IList<string>> ObterRolesUsuario(string codUsuario)
+        {
+            return _userManager.GetRolesAsync(codUsuario);
+        }
+
+        public Task<IList<Claim>> ObterClaimsUsuario(string codUsuario)
+        {
+            return _userManager.GetClaimsAsync(codUsuario);
         }
 
         public async Task<ClaimsIdentity> ObterClaimsExternos(IAuthenticationManager authenticationManager)
@@ -59,16 +69,6 @@ namespace RM.Architecture.Identity.Application.Services
             {
                 Nome = claim.Type
             });
-        }
-
-        public Task<IList<string>> ObterRolesUsuario(string codUsuario)
-        {
-            return _userManager.GetRolesAsync(codUsuario);
-        }
-
-        public Task<IList<Claim>> ObterClaimsUsuario(string codUsuario)
-        {
-            return _userManager.GetClaimsAsync(codUsuario);
         }
         
         public async void IncluirClaimUsuario(string codUsuario, ClaimViewModel claim)
