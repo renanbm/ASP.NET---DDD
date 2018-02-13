@@ -4,8 +4,8 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using RM.Architecture.Identity.Application.Interfaces;
 using RM.Architecture.Identity.Application.ViewModels;
-using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
 namespace RM.Architecture.UI.Sistema.Controllers
@@ -13,15 +13,13 @@ namespace RM.Architecture.UI.Sistema.Controllers
     [Authorize]
     public class ManageController : Controller
     {
-        private readonly ApplicationUserManager _userManager;
+        private readonly IUsuarioAppService _usuarioAppService;
 
-        public ManageController(ApplicationUserManager userManager)
+        public ManageController(IUsuarioAppService usuarioAppService)
         {
-            _userManager = userManager;
+            _usuarioAppService = usuarioAppService;
         }
 
-        //
-        // GET: /Account/Index
         public async Task<ActionResult> Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
@@ -51,8 +49,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return View(model);
         }
 
-        //
-        // GET: /Account/RemoveLogin
         public ActionResult RemoveLogin()
         {
             var linkedAccounts = _userManager.GetLogins(User.Identity.GetUserId());
@@ -60,8 +56,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return View(linkedAccounts);
         }
 
-        //
-        // POST: /Manage/RemoveLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> RemoveLogin(string loginProvider, string providerKey)
@@ -83,15 +77,11 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return RedirectToAction("ManageLogins", new {Message = message});
         }
 
-        //
-        // GET: /Account/AddPhoneNumber
         public ActionResult AddPhoneNumber()
         {
             return View();
         }
 
-        //
-        // POST: /Account/AddPhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> AddPhoneNumber(AddPhoneNumberViewModel model)
@@ -112,8 +102,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
         }
 
-        //
-        // POST: /Manage/RememberBrowser
         [HttpPost]
         public ActionResult RememberBrowser()
         {
@@ -123,8 +111,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return RedirectToAction("Index", "Manage");
         }
 
-        //
-        // POST: /Manage/ForgetBrowser
         [HttpPost]
         public ActionResult ForgetBrowser()
         {
@@ -132,10 +118,8 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return RedirectToAction("Index", "Manage");
         }
 
-        //
-        // POST: /Manage/EnableTFA
         [HttpPost]
-        public async Task<ActionResult> EnableTFA()
+        public async Task<ActionResult> EnableTfa()
         {
             await _userManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId(), true);
             var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
@@ -144,10 +128,8 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return RedirectToAction("Index", "Manage");
         }
 
-        //
-        // POST: /Manage/DisableTFA
         [HttpPost]
-        public async Task<ActionResult> DisableTFA()
+        public async Task<ActionResult> DisableTfa()
         {
             await _userManager.SetTwoFactorEnabledAsync(User.Identity.GetUserId(), false);
             var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
@@ -156,8 +138,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return RedirectToAction("Index", "Manage");
         }
 
-        //
-        // GET: /Account/VerifyPhoneNumber
         public ActionResult VerifyPhoneNumber(string phoneNumber)
         {
             return phoneNumber == null
@@ -165,8 +145,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 : View(new VerifyPhoneNumberViewModel {PhoneNumber = phoneNumber});
         }
 
-        //
-        // POST: /Account/VerifyPhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> VerifyPhoneNumber(VerifyPhoneNumberViewModel model)
@@ -187,8 +165,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return View(model);
         }
 
-        //
-        // GET: /Account/RemovePhoneNumber
         public async Task<ActionResult> RemovePhoneNumber()
         {
             var result = await _userManager.SetPhoneNumberAsync(User.Identity.GetUserId(), null);
@@ -200,15 +176,11 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return RedirectToAction("Index", new {Message = ManageMessageId.RemovePhoneSuccess});
         }
 
-        //
-        // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
             return View();
         }
 
-        //
-        // POST: /Account/Manage
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
@@ -228,38 +200,31 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return View(model);
         }
 
-        //
-        // GET: /Manage/SetPassword
         public ActionResult SetPassword()
         {
             return View();
         }
 
-        //
-        // POST: /Manage/SetPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SetPassword(SetPasswordViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+            var result = await _userManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
+            if (result.Succeeded)
             {
-                var result = await _userManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
-                if (result.Succeeded)
-                {
-                    var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
-                    if (user != null)
-                        await SignInAsync(user, false);
-                    return RedirectToAction("Index", new {Message = ManageMessageId.SetPasswordSuccess});
-                }
-                AddErrors(result);
+                var user = await _userManager.FindByIdAsync(User.Identity.GetUserId());
+                if (user != null)
+                    await SignInAsync(user, false);
+                return RedirectToAction("Index", new {Message = ManageMessageId.SetPasswordSuccess});
             }
+            AddErrors(result);
 
             // No caso de falha, reexibir a view. 
             return View(model);
         }
 
-        //
-        // GET: /Account/Manage
         public async Task<ActionResult> ManageLogins(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
@@ -282,8 +247,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             });
         }
 
-        //
-        // POST: /Manage/LinkLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LinkLogin(string provider)
@@ -293,8 +256,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 User.Identity.GetUserId());
         }
 
-        //
-        // GET: /Manage/LinkLoginCallback
         public async Task<ActionResult> LinkLoginCallback()
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(XsrfKey, User.Identity.GetUserId());
@@ -306,9 +267,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 : RedirectToAction("ManageLogins", new {Message = ManageMessageId.Error});
         }
 
-        #region Helpers
-
-        // Used for XSRF protection when adding external logins
+        
         private const string XsrfKey = "XsrfId";
 
         private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
@@ -355,7 +314,5 @@ namespace RM.Architecture.UI.Sistema.Controllers
             RemovePhoneSuccess,
             Error
         }
-
-        #endregion
     }
 }

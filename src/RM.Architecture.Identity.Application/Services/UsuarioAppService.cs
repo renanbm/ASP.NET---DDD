@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using RM.Architecture.Identity.Application.Interfaces;
+using RM.Architecture.Identity.Domain.Entities;
+using RM.Architecture.Identity.Domain.Interfaces.Repository;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
@@ -12,15 +15,32 @@ namespace RM.Architecture.Identity.Application.Services
     public class UsuarioAppService : IUsuarioAppService
     {
         private readonly ApplicationUserManager _userManager;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioAppService(ApplicationUserManager userManager)
+        public UsuarioAppService(ApplicationUserManager userManager, IUsuarioRepository usuarioRepository)
         {
             _userManager = userManager;
+            _usuarioRepository = usuarioRepository;
         }
 
-        public IEnumerable<ApplicationUser> Listar()
+        public Task<List<ApplicationUser>> Listar()
         {
-            return _userManager.Users.ToList();
+            return _userManager.Users.ToListAsync();
+        }
+
+        public IEnumerable<Usuario> ListarUsuarios()
+        {
+            return _usuarioRepository.ListarUsuarios();
+        }
+        
+        public Usuario ObterUsuarioRepo(string codUsuario)
+        {
+            return _usuarioRepository.ObterUsuario(codUsuario);
+        }
+
+        public void DesativarLock(string id)
+        {
+            _usuarioRepository.DesativarLock(id);
         }
 
         public async Task<ApplicationUser> ObterUsuario(string username)
@@ -46,6 +66,16 @@ namespace RM.Architecture.Identity.Application.Services
         public async Task<IdentityResult> ConfirmarEmail(Guid codUsuario, string codigoVerificacao)
         {
             return await _userManager.ConfirmEmailAsync(codUsuario.ToString(), codigoVerificacao);
+        }
+
+        public async Task<IdentityResult> RemoverUsuario(ApplicationUser usuario)
+        {
+            return await _userManager.DeleteAsync(usuario);
+        }
+
+        public async Task<IdentityResult> IncluirUsuario(ApplicationUser usuario, string senha)
+        {
+            return await _userManager.CreateAsync(usuario, senha);
         }
     }
 }

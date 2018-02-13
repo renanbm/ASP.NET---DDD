@@ -1,11 +1,10 @@
-﻿using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using RM.Architecture.Core.Infra.CrossCutting.MvcFilters;
+using RM.Architecture.Identity.Application.Interfaces;
 using RM.Architecture.Identity.Application.ViewModels;
-using RM.Architecture.Identity.Infra.CrossCuting.Identity.Configuration;
 using RM.Architecture.Identity.Infra.CrossCuting.Identity.Model;
 
 namespace RM.Architecture.UI.Sistema.Controllers
@@ -13,98 +12,91 @@ namespace RM.Architecture.UI.Sistema.Controllers
     [ClaimsAuthorize("AdmUsers", "True")]
     public class UsersAdminController : Controller
     {
-        private readonly ApplicationRoleManager _roleManager;
-        private readonly ApplicationUserManager _userManager;
+        private readonly IUsuarioAppService _usuarioAppService;
+        private readonly IAuthorizationAppService _authorizationAppService;
 
-        public UsersAdminController(ApplicationRoleManager roleManager, ApplicationUserManager userManager)
+        public UsersAdminController(IUsuarioAppService usuarioAppService, IAuthorizationAppService authorizationAppService)
         {
-            _roleManager = roleManager;
-            _userManager = userManager;
+            _authorizationAppService = authorizationAppService;
+            _usuarioAppService = usuarioAppService;
         }
 
-        //
-        // GET: /Users/
         public async Task<ActionResult> Index()
         {
-            return View(await _userManager.Users.ToListAsync());
+            var usuarios = await _usuarioAppService.Listar();
+            return View(usuarios);
         }
 
-        //
-        // GET: /Users/Details/5
         public async Task<ActionResult> Details(string id)
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var user = await _userManager.FindByIdAsync(id);
 
-            ViewBag.RoleNames = await _userManager.GetRolesAsync(user.Id);
-            ViewBag.Claims = await _userManager.GetClaimsAsync(user.Id);
+            var user = await _usuarioAppService.ObterUsuario(id);
+
+            ViewBag.RoleNames = await _authorizationAppService.ObterRolesUsuario(user.Id);
+            ViewBag.Claims = await _authorizationAppService.ObterClaimsUsuario(user.Id);
 
             return View(user);
         }
 
-        //
-        // GET: /Users/Create
         public async Task<ActionResult> Create()
         {
-            //Get the list of Roles
-            ViewBag.RoleId = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name");
+            var roles = await _authorizationAppService.ListarRoles();
+            ViewBag.RoleId = new SelectList(roles, "Name", "Name");
             return View();
         }
 
-        //
-        // POST: /Users/Create
         [HttpPost]
         public async Task<ActionResult> Create(RegisterViewModel userViewModel, params string[] selectedRoles)
         {
+            var roles = await _authorizationAppService.ListarRoles();
+
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser {UserName = userViewModel.Email, Email = userViewModel.Email};
-                var adminresult = await _userManager.CreateAsync(user, userViewModel.Password);
+                var adminResult = await _usuarioAppService.IncluirUsuario(user, userViewModel.Password);
 
-                //Add User to the selected Roles 
-                if (adminresult.Succeeded)
+                if (adminResult.Succeeded)
                 {
                     if (selectedRoles != null)
                     {
-                        var result = await _userManager.AddToRolesAsync(user.Id, selectedRoles);
+                        var result = await _authorizationAppService.AdicionarRoleUsuario(user.Id, selectedRoles);
                         if (!result.Succeeded)
                         {
                             ModelState.AddModelError("", result.Errors.First());
-                            ViewBag.RoleId = new SelectList(await _roleManager.Roles.ToListAsync(), "Name", "Name");
+                            ViewBag.RoleId = new SelectList(await _authorizationAppService.ListarRoles(), "Name", "Name");
                             return View();
                         }
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("", adminresult.Errors.First());
-                    ViewBag.RoleId = new SelectList(_roleManager.Roles, "Name", "Name");
+                    ModelState.AddModelError("", adminResult.Errors.First());
+                    ViewBag.RoleId = new SelectList(roles, "Name", "Name");
                     return View();
                 }
                 return RedirectToAction("Index");
             }
-            ViewBag.RoleId = new SelectList(_roleManager.Roles, "Name", "Name");
+            ViewBag.RoleId = new SelectList(roles, "Name", "Name");
             return View();
         }
 
-        //
-        // GET: /Users/Edit/1
         public async Task<ActionResult> Edit(string id)
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _usuarioAppService.ObterUsuario(id);
             if (user == null)
                 return HttpNotFound();
 
-            var userRoles = await _userManager.GetRolesAsync(user.Id);
+            var userRoles = await _authorizationAppService.ObterRolesUsuario(user.Id);
 
             return View(new EditUserViewModel
             {
                 Id = user.Id,
                 Email = user.Email,
-                RolesList = _roleManager.Roles.ToList().Select(x => new SelectListItem
+                RolesList = _authorizationAppService.ListarRoles().Result.Select(x => new SelectListItem
                 {
                     Selected = userRoles.Contains(x.Name),
                     Text = x.Name,
@@ -113,8 +105,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             });
         }
 
-        //
-        // POST: /Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Email,Id")] EditUserViewModel editUser,
@@ -122,72 +112,65 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByIdAsync(editUser.Id);
+                var user = await _usuarioAppService.ObterUsuario(editUser.Id);
                 if (user == null)
                     return HttpNotFound();
 
                 user.UserName = editUser.Email;
                 user.Email = editUser.Email;
 
-                var userRoles = await _userManager.GetRolesAsync(user.Id);
+                var userRoles = await _authorizationAppService.ObterRolesUsuario(user.Id);
 
                 selectedRole = selectedRole ?? new string[] { };
 
-                var result = await _userManager.AddToRolesAsync(user.Id, selectedRole.Except(userRoles).ToArray());
+                var result = await _authorizationAppService.AdicionarRoleUsuario(user.Id, selectedRole.Except(userRoles).ToArray());
 
                 if (!result.Succeeded)
                 {
                     ModelState.AddModelError("", result.Errors.First());
                     return View();
                 }
-                result = await _userManager.RemoveFromRolesAsync(user.Id, userRoles.Except(selectedRole).ToArray());
+                result = await _authorizationAppService.RemoverClaimsUsuario(user.Id, userRoles.Except(selectedRole).ToArray());
 
-                if (!result.Succeeded)
-                {
-                    ModelState.AddModelError("", result.Errors.First());
-                    return View();
-                }
-                return RedirectToAction("Index");
+                if (result.Succeeded) return RedirectToAction("Index");
+
+                ModelState.AddModelError("", result.Errors.First());
+                return View();
             }
             ModelState.AddModelError("", "Something failed.");
             return View();
         }
 
-        //
-        // GET: /Users/Delete/5
         public async Task<ActionResult> Delete(string id)
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _usuarioAppService.ObterUsuario(id);
             if (user == null)
                 return HttpNotFound();
             return View(user);
         }
 
-        //
-        // POST: /Users/Delete/5
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(string id)
         {
-            if (ModelState.IsValid)
-            {
-                if (id == null)
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            if (!ModelState.IsValid) return View();
 
-                var user = await _userManager.FindByIdAsync(id);
-                if (user == null)
-                    return HttpNotFound();
-                var result = await _userManager.DeleteAsync(user);
-                if (!result.Succeeded)
-                {
-                    ModelState.AddModelError("", result.Errors.First());
-                    return View();
-                }
-                return RedirectToAction("Index");
-            }
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            var user = await _usuarioAppService.ObterUsuario(id);
+            if (user == null)
+                return HttpNotFound();
+
+            var result = await _usuarioAppService.RemoverUsuario(user);
+
+            if (result.Succeeded) return RedirectToAction("Index");
+
+            ModelState.AddModelError("", result.Errors.First());
+
             return View();
         }
     }

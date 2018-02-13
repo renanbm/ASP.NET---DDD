@@ -1,33 +1,33 @@
 ﻿using System.Web.Mvc;
-using RM.Architecture.Identity.Domain.Interfaces.Repository;
+using RM.Architecture.Identity.Application.Interfaces;
 
 namespace RM.Architecture.UI.Sistema.Controllers
 {
     [Authorize]
     public class UsuariosController : Controller
     {
-        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IUsuarioAppService _usuarioAppService;
 
-        public UsuariosController(IUsuarioRepository usuarioRepository)
+        public UsuariosController(IUsuarioAppService usuarioAppService)
         {
-            _usuarioRepository = usuarioRepository;
+            _usuarioAppService = usuarioAppService;
         }
 
-        // GET: Usuarios
         public ActionResult Index()
         {
-            return View(_usuarioRepository.ListarUsuarios());
+            var usuarios = _usuarioAppService.ListarUsuarios();
+            return View(usuarios);
         }
 
-        // GET: Usuarios/Details/5
         public ActionResult Details(string id)
         {
-            return View(_usuarioRepository.ObterUsuario(id));
+            var usuario = _usuarioAppService.ObterUsuarioRepo(id);
+            return View(usuario);
         }
 
         public ActionResult DesativarLock(string id)
         {
-            _usuarioRepository.DesativarLock(id);
+            _usuarioAppService.DesativarLock(id);
             return RedirectToAction("Index");
         }
     }

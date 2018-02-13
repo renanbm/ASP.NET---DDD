@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,9 +27,9 @@ namespace RM.Architecture.Identity.Application.Services
             _roleManager = roleManager;
         }
 
-        public IQueryable<IdentityRole> ListarRoles()
+        public Task<List<IdentityRole>> ListarRoles()
         {
-            return _roleManager.Roles;
+            return _roleManager.Roles.ToListAsync();
         }
 
         public Task<IdentityRole> ObterRole(string codRole)
@@ -60,9 +61,24 @@ namespace RM.Architecture.Identity.Application.Services
             });
         }
 
+        public Task<IList<string>> ObterRolesUsuario(string codUsuario)
+        {
+            return _userManager.GetRolesAsync(codUsuario);
+        }
+
+        public Task<IList<Claim>> ObterClaimsUsuario(string codUsuario)
+        {
+            return _userManager.GetClaimsAsync(codUsuario);
+        }
+        
         public async void IncluirClaimUsuario(string codUsuario, ClaimViewModel claim)
         {
             await _userManager.AddClaimAsync(codUsuario, new Claim(claim.Type, claim.Value));
+        }
+
+        public async Task<IdentityResult> RemoverClaimsUsuario(string codUsuario, string[] roles)
+        {
+            return await _userManager.RemoveFromRolesAsync(codUsuario, roles);
         }
 
         public async Task<IdentityResult> AtualizarRole(RoleViewModel roleviewModel)
@@ -79,6 +95,11 @@ namespace RM.Architecture.Identity.Application.Services
         public async Task<bool> UsuarioPossuiRole(string codUsuario, string role)
         {
             return await _userManager.IsInRoleAsync(codUsuario, role);
+        }
+
+        public async Task<IdentityResult> AdicionarRoleUsuario(string codUsuario, string[] roles)
+        {
+            return await _userManager.AddToRolesAsync(codUsuario, roles);
         }
 
         public async Task<IdentityResult> Remover(IdentityRole role)

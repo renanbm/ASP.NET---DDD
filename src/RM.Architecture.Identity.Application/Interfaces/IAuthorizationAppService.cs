@@ -14,11 +14,15 @@ namespace RM.Architecture.Identity.Application.Interfaces
     {
         List<Claims> ListarClaims();
 
-        IQueryable<IdentityRole> ListarRoles();
+        Task<List<IdentityRole>> ListarRoles();
 
         Task<IdentityRole> ObterRole(string codRole);
 
         Task<ClaimsIdentity> ObterClaimsExternos(IAuthenticationManager authenticationManager);
+
+        Task<IList<string>> ObterRolesUsuario(string codUsuario);
+
+        Task<IList<Claim>> ObterClaimsUsuario(string codUsuario);
 
         void IncluirClaimUsuario(string codUsuario, ClaimViewModel claim);
 
@@ -28,7 +32,11 @@ namespace RM.Architecture.Identity.Application.Interfaces
 
         void IncluirClaim(ClaimViewModel claim);
 
+        Task<IdentityResult> AdicionarRoleUsuario(string codUsuario, string[] roles);
+
         Task<IdentityResult> AtualizarRole(RoleViewModel roleviewModel);
+
+        Task<IdentityResult> RemoverClaimsUsuario(string codUsuario, string[] roles);
 
         Task<IdentityResult> Remover(IdentityRole role);
     }
