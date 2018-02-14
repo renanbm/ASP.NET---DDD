@@ -14,7 +14,7 @@ namespace RM.Architecture.Identity.Application.Services
         private readonly ApplicationSignInManager _signInManager;
         private readonly ApplicationUserManager _userManager;
         private readonly IAuthorizationAppService _authorizationAppService;
-        
+
         public LoginAppService(ApplicationSignInManager signInManager, ApplicationUserManager userManager, IAuthorizationAppService authorizationAppService)
         {
             _signInManager = signInManager;
@@ -22,14 +22,9 @@ namespace RM.Architecture.Identity.Application.Services
             _authorizationAppService = authorizationAppService;
         }
 
-        public IdentityResult GerarSecurityStamp(string codUsuario)
+        public async Task<IList<UserLoginInfo>> ConsultarLoginsUsuario(string codUsuario)
         {
-            return _userManager.UpdateSecurityStamp(codUsuario);
-        }
-
-        public async Task<SignInStatus> EfetuarLoginExterno(ExternalLoginInfo login, bool rememberMe)
-        {
-            return await _signInManager.ExternalSignInAsync(login, rememberMe);
+            return await _userManager.GetLoginsAsync(codUsuario);
         }
 
         public async Task<IList<string>> ConsultarProvedores(string codUsuario)
@@ -37,24 +32,14 @@ namespace RM.Architecture.Identity.Application.Services
             return await _userManager.GetValidTwoFactorProvidersAsync(codUsuario);
         }
 
-        public async Task<string> GerarToken(string codUsuario)
-        {
-            return await _userManager.GeneratePasswordResetTokenAsync(codUsuario);
-        }
-
-        public async Task<bool> UsuarioVerificado()
-        {
-            return await _signInManager.HasBeenVerifiedAsync();
-        }
-
-        public async Task<bool> EnviarToken(string provedor)
-        {
-            return await _signInManager.SendTwoFactorCodeAsync(provedor);
-        }
-
         public async Task<string> ObterUsuarioVerificado()
         {
             return await _signInManager.GetVerifiedUserIdAsync();
+        }
+
+        public async Task<string> ObterTokenEmail(string codUsuario)
+        {
+            return await _userManager.GenerateEmailConfirmationTokenAsync(codUsuario);
         }
 
         public async Task<SignInStatus> ObterStatusLogin(string email, string senha, bool rememberMe)
@@ -62,14 +47,34 @@ namespace RM.Architecture.Identity.Application.Services
             return await _signInManager.PasswordSignInAsync(email, senha, rememberMe, true);
         }
 
-        public async Task<SignInStatus> ObterStatusLoginTwoFactor(string provedor, string codigo, bool rememberMe)
+        public async Task<SignInStatus> ObterStatusLoginTwoFactorAuthentication(string provedor, string codigo, bool rememberMe)
         {
             return await _signInManager.TwoFactorSignInAsync(provedor, codigo, false, rememberMe);
         }
 
-        public async Task<IList<UserLoginInfo>> ConsultarLoginsUsuario(string codUsuario)
+        public async Task<IdentityResult> IncluirLogin(string codUsuario, UserLoginInfo login)
         {
-            return await _userManager.GetLoginsAsync(codUsuario);
+            return await _userManager.AddLoginAsync(codUsuario, login);
+        }
+
+        public async Task<IdentityResult> IncluirSenha(string codUsuario, string senha)
+        {
+            return await _userManager.AddPasswordAsync(codUsuario, senha);
+        }
+
+        public async Task<IdentityResult> AlterarSenha(string usuario, string senhaAntiga, string senhaNova)
+        {
+            return await _userManager.ChangePasswordAsync(usuario, senhaAntiga, senhaNova);
+        }
+
+        public async Task<IdentityResult> ResetarSenha(string codUsuario, string codigoSeguranca, string novaSenha)
+        {
+            return await _userManager.ResetPasswordAsync(codUsuario, codigoSeguranca, novaSenha);
+        }
+
+        public async Task<IdentityResult> RemoverLogin(string codUsuario, UserLoginInfo login)
+        {
+            return await _userManager.RemoveLoginAsync(codUsuario, login);
         }
 
         public async Task EfetuarLogin(ApplicationUser usuario, bool rememberMe, IAuthenticationManager authenticationManager, string clientKey)
@@ -89,9 +94,9 @@ namespace RM.Architecture.Identity.Application.Services
             );
         }
 
-        public async Task<IdentityResult> EfetuarLogin(ApplicationUser usuario, string clientKey)
+        public async Task<SignInStatus> EfetuarLoginExterno(ExternalLoginInfo login, bool rememberMe)
         {
-            return await _userManager.SignInClientAsync(usuario, clientKey);
+            return await _signInManager.ExternalSignInAsync(login, rememberMe);
         }
 
         public async Task EfetuarLogoff(ApplicationUser usuario, string clientKey, IAuthenticationManager authenticationManager)
@@ -101,19 +106,29 @@ namespace RM.Architecture.Identity.Application.Services
             authenticationManager.SignOut();
         }
 
-        public async Task<IdentityResult> IncluirSenha(string codUsuario, string senha)
+        public IdentityResult GerarSecurityStamp(string codUsuario)
         {
-            return await _userManager.AddPasswordAsync(codUsuario, senha);
+            return _userManager.UpdateSecurityStamp(codUsuario);
         }
 
-        public async Task<IdentityResult> ResetarSenha(string codUsuario, string codigoSeguranca, string novaSenha)
+        public async Task<string> GerarToken(string codUsuario)
         {
-            return await _userManager.ResetPasswordAsync(codUsuario, codigoSeguranca, novaSenha);
+            return await _userManager.GeneratePasswordResetTokenAsync(codUsuario);
         }
 
-        public async Task<IdentityResult> AlterarSenha(string usuario, string senhaAntiga, string senhaNova)
+        public Task<string> GerarTokenCelular(string codUsuario, string numeroCelular)
         {
-            return await _userManager.ChangePasswordAsync(usuario, senhaAntiga, senhaNova);
+            return _userManager.GenerateChangePhoneNumberTokenAsync(codUsuario, numeroCelular);
+        }
+
+        public async Task<bool> EnviarToken(string provedor)
+        {
+            return await _signInManager.SendTwoFactorCodeAsync(provedor);
+        }
+
+        public async Task<bool> UsuarioVerificado()
+        {
+            return await _signInManager.HasBeenVerifiedAsync();
         }
 
         public async Task<IdentityResult> HabilitarTwoFactorAuthentication(string codUsuario, bool habilitado)
@@ -124,26 +139,6 @@ namespace RM.Architecture.Identity.Application.Services
         public async Task<bool> TwoFactorAuthentication(string codUsuario)
         {
             return await _userManager.GetTwoFactorEnabledAsync(codUsuario);
-        }
-
-        public async Task<string> ObterTokenEmail(string codUsuario)
-        {
-            return await _userManager.GenerateEmailConfirmationTokenAsync(codUsuario);
-        }
-
-        public async Task<IdentityResult> IncluirLogin(string codUsuario, UserLoginInfo login)
-        {
-            return await _userManager.AddLoginAsync(codUsuario, login);
-        }
-
-        public async Task<IdentityResult> RemoverLogin(string codUsuario, UserLoginInfo login)
-        {
-            return await _userManager.RemoveLoginAsync(codUsuario, login);
-        }
-
-        public Task<string> GerarTokenCelular(string codUsuario, string numeroCelular)
-        {
-            return _userManager.GenerateChangePhoneNumberTokenAsync(codUsuario, numeroCelular);
         }
 
         private async Task ResetarContadorTentativasLogin(ApplicationUser usuario)

@@ -25,21 +25,21 @@ namespace RM.Architecture.Identity.Application.Interfaces
 
         Task<string> ObterTelefoneUsuario(string codUsuario);
 
-        Task<IdentityResult> IncluirUsuarioSenha(ApplicationUser usuario, string senha);
-
         Task<IdentityResult> IncluirUsuario(ApplicationUser usuario);
 
-        Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone, string token);
+        Task<IdentityResult> IncluirUsuarioSenha(ApplicationUser usuario, string senha);
+
+        IdentityResult Atualizar(ApplicationUser usuario);
 
         Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone);
 
-        IdentityResult Atualizar(ApplicationUser usuario);
+        Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone, string token);
+
+        Task<IdentityResult> RemoverUsuario(ApplicationUser usuario);
 
         void DesativarLock(string id);
 
         Task<IdentityResult> ConfirmarEmail(Guid codUsuario, string codigoVerificacao);
-
-        Task<IdentityResult> RemoverUsuario(ApplicationUser usuario);
 
         Task<bool> EmailConfirmado(Guid codUsuario);
 

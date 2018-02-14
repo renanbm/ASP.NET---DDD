@@ -9,21 +9,21 @@ namespace RM.Architecture.Identity.Application.Interfaces
 {
     public interface ILoginAppService
     {
-        Task<IList<string>> ConsultarProvedores(string codUsuario);
-
         Task<IList<UserLoginInfo>> ConsultarLoginsUsuario(string codUsuario);
 
-        Task<string> ObterTokenEmail(string codUsuario);
+        Task<IList<string>> ConsultarProvedores(string codUsuario);
 
         Task<string> ObterUsuarioVerificado();
 
+        Task<string> ObterTokenEmail(string codUsuario);
+        
         Task<SignInStatus> ObterStatusLogin(string email, string senha, bool rememberMe);
 
-        Task<SignInStatus> ObterStatusLoginTwoFactor(string provedor, string codigo, bool rememberMe);
-
-        Task<IdentityResult> IncluirSenha(string codUsuario, string senha);
+        Task<SignInStatus> ObterStatusLoginTwoFactorAuthentication(string provedor, string codigo, bool rememberMe);
 
         Task<IdentityResult> IncluirLogin(string codUsuario, UserLoginInfo login);
+
+        Task<IdentityResult> IncluirSenha(string codUsuario, string senha);
 
         Task<IdentityResult> AlterarSenha(string usuario, string senhaAntiga, string senhaNova);
 
@@ -46,9 +46,9 @@ namespace RM.Architecture.Identity.Application.Interfaces
         Task<bool> EnviarToken(string provedor);
 
         Task<bool> UsuarioVerificado();
-        
-        Task<bool> TwoFactorAuthentication(string codUsuario);
-        
+
         Task<IdentityResult> HabilitarTwoFactorAuthentication(string codUsuario, bool habilitado);
+
+        Task<bool> TwoFactorAuthentication(string codUsuario);
     }
 }

@@ -32,29 +32,9 @@ namespace RM.Architecture.Identity.Application.Services
             return _usuarioRepository.ListarUsuarios();
         }
 
-        public Usuario ObterUsuarioRepo(string codUsuario)
-        {
-            return _usuarioRepository.ObterUsuario(codUsuario);
-        }
-
-        public async Task<string> ObterTelefoneUsuario(string codUsuario)
-        {
-            return await _userManager.GetPhoneNumberAsync(codUsuario);
-        }
-
-        public void DesativarLock(string id)
-        {
-            _usuarioRepository.DesativarLock(id);
-        }
-
         public async Task<ApplicationUser> ObterUsuario(string username)
         {
             return await _userManager.FindByNameAsync(username);
-        }
-
-        public async Task<ApplicationUser> ObterUsuarioPorEmail(string email)
-        {
-            return await _userManager.FindByEmailAsync(email);
         }
 
         public async Task<ApplicationUser> ObterUsuario(string username, string senha)
@@ -67,28 +47,29 @@ namespace RM.Architecture.Identity.Application.Services
             return await _userManager.FindAsync(loginInfo);
         }
 
-        public async Task<bool> EmailConfirmado(Guid codUsuario)
+        public async Task<ApplicationUser> ObterUsuarioPorEmail(string email)
         {
-            return await _userManager.IsEmailConfirmedAsync(codUsuario.ToString());
+            return await _userManager.FindByEmailAsync(email);
         }
 
-        public async Task<IdentityResult> ConfirmarEmail(Guid codUsuario, string codigoVerificacao)
+        public Usuario ObterUsuarioRepo(string codUsuario)
         {
-            return await _userManager.ConfirmEmailAsync(codUsuario.ToString(), codigoVerificacao);
+            return _usuarioRepository.ObterUsuario(codUsuario);
         }
 
-        public async Task<IdentityResult> RemoverUsuario(ApplicationUser usuario)
+        public async Task<string> ObterTelefoneUsuario(string codUsuario)
         {
-            return await _userManager.DeleteAsync(usuario);
+            return await _userManager.GetPhoneNumberAsync(codUsuario);
+        }
+
+        public async Task<IdentityResult> IncluirUsuario(ApplicationUser usuario)
+        {
+            return await _userManager.CreateAsync(usuario);
         }
 
         public async Task<IdentityResult> IncluirUsuarioSenha(ApplicationUser usuario, string senha)
         {
             return await _userManager.CreateAsync(usuario, senha);
-        }
-        public async Task<IdentityResult> IncluirUsuario(ApplicationUser usuario)
-        {
-            return await _userManager.CreateAsync(usuario);
         }
 
         public IdentityResult Atualizar(ApplicationUser usuario)
@@ -96,14 +77,34 @@ namespace RM.Architecture.Identity.Application.Services
             return _userManager.Update(usuario);
         }
 
+        public async Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone)
+        {
+            return await _userManager.SetPhoneNumberAsync(codUsuario, telefone);
+        }
+
         public async Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone, string token)
         {
             return await _userManager.ChangePhoneNumberAsync(codUsuario, telefone, token);
         }
 
-        public async Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone)
+        public async Task<IdentityResult> RemoverUsuario(ApplicationUser usuario)
         {
-            return await _userManager.SetPhoneNumberAsync(codUsuario, telefone);
+            return await _userManager.DeleteAsync(usuario);
+        }
+
+        public void DesativarLock(string id)
+        {
+            _usuarioRepository.DesativarLock(id);
+        }
+
+        public async Task<IdentityResult> ConfirmarEmail(Guid codUsuario, string codigoVerificacao)
+        {
+            return await _userManager.ConfirmEmailAsync(codUsuario.ToString(), codigoVerificacao);
+        }
+
+        public async Task<bool> EmailConfirmado(Guid codUsuario)
+        {
+            return await _userManager.IsEmailConfirmedAsync(codUsuario.ToString());
         }
 
         public bool SmsService()

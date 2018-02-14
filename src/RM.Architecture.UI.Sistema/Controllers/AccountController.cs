@@ -80,7 +80,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var result = await _loginAppService.ObterStatusLoginTwoFactor(model.Provider, model.Code, model.RememberBrowser);
+            var result = await _loginAppService.ObterStatusLoginTwoFactorAuthentication(model.Provider, model.Code, model.RememberBrowser);
 
             switch (result)
             {
