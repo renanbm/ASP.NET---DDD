@@ -30,6 +30,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.IoC
             
             // Data
             container.Register<IUsuarioRepository, UsuarioRepository>(Lifestyle.Scoped);
+            container.Register<IClaimsRepository, ClaimsRepository>(Lifestyle.Scoped);
         }
     }
 }

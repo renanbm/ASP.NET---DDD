@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
 {
@@ -10,7 +9,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
             CodClaim = Guid.NewGuid();
         }
 
-        public Guid CodClaim { get; }
+        public Guid CodClaim { get; private set; }
 
         public string Nome { get; set; }
     }
