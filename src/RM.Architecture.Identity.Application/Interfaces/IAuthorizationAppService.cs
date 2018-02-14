@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -12,32 +11,32 @@ namespace RM.Architecture.Identity.Application.Interfaces
 {
     public interface IAuthorizationAppService
     {
-        List<Claims> ListarClaims();
-
         Task<List<IdentityRole>> ListarRoles();
 
-        Task<IdentityRole> ObterRole(string codRole);
+        List<Claims> ListarClaims();
 
-        Task<ClaimsIdentity> ObterClaimsExternos(IAuthenticationManager authenticationManager);
+        Task<IdentityRole> ObterRole(string codRole);
 
         Task<IList<string>> ObterRolesUsuario(string codUsuario);
 
         Task<IList<Claim>> ObterClaimsUsuario(string codUsuario);
 
-        void IncluirClaimUsuario(string codUsuario, ClaimViewModel claim);
-
-        Task<bool> UsuarioPossuiRole(string codUsuario, string role);
+        Task<ClaimsIdentity> ObterClaimsExternos(IAuthenticationManager authenticationManager);
 
         Task<IdentityResult> IncluirRole(string nome);
 
+        Task<IdentityResult> IncluirRoleUsuario(string codUsuario, string[] roles);
+
         void IncluirClaim(ClaimViewModel claim);
 
-        Task<IdentityResult> AdicionarRoleUsuario(string codUsuario, string[] roles);
+        void IncluirClaimUsuario(string codUsuario, ClaimViewModel claim);
 
         Task<IdentityResult> AtualizarRole(RoleViewModel roleviewModel);
 
+        Task<IdentityResult> Remover(IdentityRole role);
+
         Task<IdentityResult> RemoverClaimsUsuario(string codUsuario, string[] roles);
 
-        Task<IdentityResult> Remover(IdentityRole role);
+        Task<bool> UsuarioPossuiRole(string codUsuario, string role);
     }
 }

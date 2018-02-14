@@ -316,7 +316,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 var result = await _usuarioAppService.IncluirUsuario(usuario);
                 if (result.Succeeded)
                 {
-                    result = await _loginAppService.AdicionarLogin(usuario.Id, info.Login);
+                    result = await _loginAppService.IncluirLogin(usuario.Id, info.Login);
                     if (result.Succeeded)
                     {
                         await _loginAppService.EfetuarLogin(usuario, false, AuthenticationManager, Request.Browser.Type);

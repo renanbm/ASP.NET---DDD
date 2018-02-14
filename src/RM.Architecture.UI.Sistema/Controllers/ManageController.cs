@@ -281,7 +281,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (loginInfo == null)
                 return RedirectToAction("ManageLogins", new { Message = ManageMessageId.Error });
 
-            var result = await _loginAppService.AdicionarLogin(User.Identity.GetUserId(), loginInfo.Login);
+            var result = await _loginAppService.IncluirLogin(User.Identity.GetUserId(), loginInfo.Login);
 
             return result.Succeeded
                 ? RedirectToAction("ManageLogins")

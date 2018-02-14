@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -63,6 +62,11 @@ namespace RM.Architecture.Identity.Application.Services
             return await _roleManager.CreateAsync(role);
         }
 
+        public async Task<IdentityResult> IncluirRoleUsuario(string codUsuario, string[] roles)
+        {
+            return await _userManager.AddToRolesAsync(codUsuario, roles);
+        }
+
         public void IncluirClaim(ClaimViewModel claim)
         {
             _claimsRepository.Incluir(new Claims
@@ -70,10 +74,15 @@ namespace RM.Architecture.Identity.Application.Services
                 Nome = claim.Type
             });
         }
-        
+
         public async void IncluirClaimUsuario(string codUsuario, ClaimViewModel claim)
         {
             await _userManager.AddClaimAsync(codUsuario, new Claim(claim.Type, claim.Value));
+        }
+
+        public async Task<IdentityResult> Remover(IdentityRole role)
+        {
+            return await _roleManager.DeleteAsync(role);
         }
 
         public async Task<IdentityResult> RemoverClaimsUsuario(string codUsuario, string[] roles)
@@ -95,16 +104,6 @@ namespace RM.Architecture.Identity.Application.Services
         public async Task<bool> UsuarioPossuiRole(string codUsuario, string role)
         {
             return await _userManager.IsInRoleAsync(codUsuario, role);
-        }
-
-        public async Task<IdentityResult> AdicionarRoleUsuario(string codUsuario, string[] roles)
-        {
-            return await _userManager.AddToRolesAsync(codUsuario, roles);
-        }
-
-        public async Task<IdentityResult> Remover(IdentityRole role)
-        {
-            return await _roleManager.DeleteAsync(role);
         }
     }
 }

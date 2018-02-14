@@ -12,26 +12,18 @@ namespace RM.Architecture.Identity.Application.Interfaces
         Task<List<ApplicationUser>> Listar();
 
         IEnumerable<Usuario> ListarUsuarios();
-
-        Usuario ObterUsuarioRepo(string codUsuario);
-
-        Task<string> ObterTelefoneUsuario(string codUsuario);
-
-        Task<ApplicationUser> ObterUsuarioPorEmail(string email);
-
-        void DesativarLock(string id);
-
+        
         Task<ApplicationUser> ObterUsuario(string username);
 
         Task<ApplicationUser> ObterUsuario(string username, string senha);
 
         Task<ApplicationUser> ObterUsuario(UserLoginInfo loginInfo);
 
-        Task<bool> EmailConfirmado(Guid codUsuario);
+        Task<ApplicationUser> ObterUsuarioPorEmail(string email);
 
-        Task<IdentityResult> ConfirmarEmail(Guid codUsuario, string codigoVerificacao);
+        Usuario ObterUsuarioRepo(string codUsuario);
 
-        Task<IdentityResult> RemoverUsuario(ApplicationUser usuario);
+        Task<string> ObterTelefoneUsuario(string codUsuario);
 
         Task<IdentityResult> IncluirUsuarioSenha(ApplicationUser usuario, string senha);
 
@@ -42,6 +34,14 @@ namespace RM.Architecture.Identity.Application.Interfaces
         Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone);
 
         IdentityResult Atualizar(ApplicationUser usuario);
+
+        void DesativarLock(string id);
+
+        Task<IdentityResult> ConfirmarEmail(Guid codUsuario, string codigoVerificacao);
+
+        Task<IdentityResult> RemoverUsuario(ApplicationUser usuario);
+
+        Task<bool> EmailConfirmado(Guid codUsuario);
 
         bool SmsService();
 

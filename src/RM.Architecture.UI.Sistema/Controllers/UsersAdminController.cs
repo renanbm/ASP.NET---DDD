@@ -61,7 +61,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
                 {
                     if (selectedRoles != null)
                     {
-                        var result = await _authorizationAppService.AdicionarRoleUsuario(user.Id, selectedRoles);
+                        var result = await _authorizationAppService.IncluirRoleUsuario(user.Id, selectedRoles);
                         if (!result.Succeeded)
                         {
                             ModelState.AddModelError("", result.Errors.First());
@@ -123,7 +123,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
                 selectedRole = selectedRole ?? new string[] { };
 
-                var result = await _authorizationAppService.AdicionarRoleUsuario(user.Id, selectedRole.Except(userRoles).ToArray());
+                var result = await _authorizationAppService.IncluirRoleUsuario(user.Id, selectedRole.Except(userRoles).ToArray());
 
                 if (!result.Succeeded)
                 {

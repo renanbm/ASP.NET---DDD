@@ -131,7 +131,7 @@ namespace RM.Architecture.Identity.Application.Services
             return await _userManager.GenerateEmailConfirmationTokenAsync(codUsuario);
         }
 
-        public async Task<IdentityResult> AdicionarLogin(string codUsuario, UserLoginInfo login)
+        public async Task<IdentityResult> IncluirLogin(string codUsuario, UserLoginInfo login)
         {
             return await _userManager.AddLoginAsync(codUsuario, login);
         }

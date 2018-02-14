@@ -9,7 +9,7 @@ namespace RM.Architecture.Identity.Infra.CrossCuting.Identity.Model
             CodClaim = Guid.NewGuid();
         }
 
-        public Guid CodClaim { get; private set; }
+        public Guid CodClaim { get; }
 
         public string Nome { get; set; }
     }
