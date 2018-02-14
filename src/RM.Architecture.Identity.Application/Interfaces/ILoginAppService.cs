@@ -10,6 +10,20 @@ namespace RM.Architecture.Identity.Application.Interfaces
 {
     public interface ILoginAppService
     {
+
+        IdentityResult GerarSecurityStamp(string codUsuario);
+        Task<SignInStatus> EfetuarLoginExterno(ExternalLoginInfo login, bool rememberMe);
+
+        Task<IList<string>> ConsultarProvedores(string codUsuario);
+
+        Task<string> GerarToken(string codUsuario);
+
+        Task<string> ObterUsuarioVerificado();
+
+        Task<bool> EnviarToken(string provedor);
+
+        Task<bool> UsuarioVerificado();
+
         Task<SignInStatus> ObterStatusLogin(string email, string senha, bool rememberMe);
 
         Task<SignInStatus> ObterStatusLoginTwoFactor(string provedor, string codigo, bool rememberMe);
@@ -21,6 +35,8 @@ namespace RM.Architecture.Identity.Application.Interfaces
         Task EfetuarLogin(ApplicationUser usuario, bool rememberMe, IAuthenticationManager authenticationManager, string clientKey);
 
         Task EfetuarLogoff(ApplicationUser usuario, string clientKey, IAuthenticationManager authenticationManager);
+
+        Task<string> ObterTokenEmail(string codUsuario);
 
         Task<IdentityResult> EfetuarLogin(ApplicationUser usuario, string clientKey);
 

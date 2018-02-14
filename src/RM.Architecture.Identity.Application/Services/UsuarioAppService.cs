@@ -31,7 +31,7 @@ namespace RM.Architecture.Identity.Application.Services
         {
             return _usuarioRepository.ListarUsuarios();
         }
-        
+
         public Usuario ObterUsuarioRepo(string codUsuario)
         {
             return _usuarioRepository.ObterUsuario(codUsuario);
@@ -91,10 +91,16 @@ namespace RM.Architecture.Identity.Application.Services
             return await _userManager.CreateAsync(usuario);
         }
 
+        public IdentityResult Atualizar(ApplicationUser usuario)
+        {
+            return _userManager.Update(usuario);
+        }
+
         public async Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone, string token)
         {
             return await _userManager.ChangePhoneNumberAsync(codUsuario, telefone, token);
         }
+
         public async Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone)
         {
             return await _userManager.SetPhoneNumberAsync(codUsuario, telefone);

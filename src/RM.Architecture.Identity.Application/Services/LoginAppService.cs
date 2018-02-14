@@ -22,6 +22,41 @@ namespace RM.Architecture.Identity.Application.Services
             _authorizationAppService = authorizationAppService;
         }
 
+        public IdentityResult GerarSecurityStamp(string codUsuario)
+        {
+            return _userManager.UpdateSecurityStamp(codUsuario);
+        }
+
+        public async Task<SignInStatus> EfetuarLoginExterno(ExternalLoginInfo login, bool rememberMe)
+        {
+            return await _signInManager.ExternalSignInAsync(login, rememberMe);
+        }
+
+        public async Task<IList<string>> ConsultarProvedores(string codUsuario)
+        {
+            return await _userManager.GetValidTwoFactorProvidersAsync(codUsuario);
+        }
+
+        public async Task<string> GerarToken(string codUsuario)
+        {
+            return await _userManager.GeneratePasswordResetTokenAsync(codUsuario);
+        }
+
+        public async Task<bool> UsuarioVerificado()
+        {
+            return await _signInManager.HasBeenVerifiedAsync();
+        }
+
+        public async Task<bool> EnviarToken(string provedor)
+        {
+            return await _signInManager.SendTwoFactorCodeAsync(provedor);
+        }
+
+        public async Task<string> ObterUsuarioVerificado()
+        {
+            return await _signInManager.GetVerifiedUserIdAsync();
+        }
+
         public async Task<SignInStatus> ObterStatusLogin(string email, string senha, bool rememberMe)
         {
             return await _signInManager.PasswordSignInAsync(email, senha, rememberMe, true);
@@ -91,10 +126,16 @@ namespace RM.Architecture.Identity.Application.Services
             return await _userManager.GetTwoFactorEnabledAsync(codUsuario);
         }
 
+        public async Task<string> ObterTokenEmail(string codUsuario)
+        {
+            return await _userManager.GenerateEmailConfirmationTokenAsync(codUsuario);
+        }
+
         public async Task<IdentityResult> AdicionarLogin(string codUsuario, UserLoginInfo login)
         {
             return await _userManager.AddLoginAsync(codUsuario, login);
         }
+
         public async Task<IdentityResult> RemoverLogin(string codUsuario, UserLoginInfo login)
         {
             return await _userManager.RemoveLoginAsync(codUsuario, login);

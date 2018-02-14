@@ -41,6 +41,8 @@ namespace RM.Architecture.Identity.Application.Interfaces
 
         Task<IdentityResult> AtualizarTelefone(string codUsuario, string telefone);
 
+        IdentityResult Atualizar(ApplicationUser usuario);
+
         bool SmsService();
 
         Task EnviarSms(IdentityMessage mensagem);

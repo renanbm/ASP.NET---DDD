@@ -66,7 +66,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl, string userId)
         {
-            if (!await _signInManager.HasBeenVerifiedAsync())
+            if (!await _loginAppService.UsuarioVerificado())
                 return View("Error");
 
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, UserId = userId });
@@ -86,7 +86,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             {
                 case SignInStatus.Success:
                     var user = _usuarioAppService.ObterUsuario(model.UserId);
-                    await SignInAsync(user.Result, false);
+                    await _loginAppService.EfetuarLogin(user.Result, false, AuthenticationManager, Request.Browser.Type);
                     return RedirectToLocal(model.ReturnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -121,7 +121,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             if (result.Succeeded)
             {
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                var code = await _loginAppService.ObterTokenEmail(user.Id);
                 var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code }, Request.Url?.Scheme);
                 await _usuarioAppService.EnviarEmail(user.Id, "Confirme sua Conta", "Por favor confirme sua conta clicando neste link: <a href='" + callbackUrl + "'></a>");
                 return View("DisplayEmail");
@@ -143,8 +143,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        #region [Esqueci Senha]
-
         [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
@@ -160,10 +158,10 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             var user = await _usuarioAppService.ObterUsuario(model.Email);
 
-            if (user == null || !await _loginAppService.EmailConfirmado(new Guid(user.Id)))
+            if (user == null || !await _usuarioAppService.EmailConfirmado(new Guid(user.Id)))
                 return View("ForgotPasswordConfirmation");
 
-            var code = await _userManager.GeneratePasswordResetTokenAsync(user.Id);
+            var code = await _loginAppService.GerarToken(user.Id);
 
             var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code }, Request.Url?.Scheme);
 
@@ -179,8 +177,6 @@ namespace RM.Architecture.UI.Sistema.Controllers
         {
             return View();
         }
-
-        #endregion
 
         [AllowAnonymous]
         public ActionResult ResetPassword(string codigoSeguranca)
@@ -226,12 +222,12 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl)
         {
-            var userId = await _signInManager.GetVerifiedUserIdAsync();
+            var userId = await _loginAppService.ObterUsuarioVerificado();
 
             if (userId == null)
                 return View("Error");
 
-            var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(userId);
+            var userFactors = await _loginAppService.ConsultarProvedores(userId);
 
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose })
                 .ToList();
@@ -247,7 +243,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             if (!ModelState.IsValid)
                 return View();
 
-            if (!await _signInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
+            if (!await _loginAppService.EnviarToken(model.SelectedProvider))
                 return View("Error");
 
             return RedirectToAction("VerifyCode",
@@ -265,13 +261,13 @@ namespace RM.Architecture.UI.Sistema.Controllers
             var user = await _usuarioAppService.ObterUsuario(loginInfo.Login);
 
             // Logar caso haja um login externo e já esteja logado neste provedor de login
-            var result = await _signInManager.ExternalSignInAsync(loginInfo, false);
+            var result = await _loginAppService.EfetuarLoginExterno(loginInfo, false);
 
             switch (result)
             {
                 case SignInStatus.Success:
                     var userext = _usuarioAppService.ObterUsuarioPorEmail(user.Email);
-                    await SignInAsync(userext.Result, false);
+                    await _loginAppService.EfetuarLogin(userext.Result, false, AuthenticationManager, Request.Browser.Type);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -323,9 +319,9 @@ namespace RM.Architecture.UI.Sistema.Controllers
                     result = await _loginAppService.AdicionarLogin(usuario.Id, info.Login);
                     if (result.Succeeded)
                     {
-                        await _loginAppService.EfetuarLogin(usuario, false, false);
+                        await _loginAppService.EfetuarLogin(usuario, false, AuthenticationManager, Request.Browser.Type);
                         var userext = _usuarioAppService.ObterUsuarioPorEmail(model.Email);
-                        await _loginAppService.EfetuarLogin(userext.Result, false);
+                        await _loginAppService.EfetuarLogin(userext.Result, false, AuthenticationManager, Request.Browser.Type);
                         return RedirectToLocal(returnUrl);
                     }
                 }
@@ -364,7 +360,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SignOutEverywhere()
         {
-            _userManager.UpdateSecurityStamp(User.Identity.GetUserId());
+            _loginAppService.GerarSecurityStamp(User.Identity.GetUserId());
             await SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
@@ -377,7 +373,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
             var client = usuario.Result.Clients.SingleOrDefault(c => c.Id == clientId);
             if (client != null)
                 usuario.Result.Clients.Remove(client);
-            _userManager.Update(usuario);
+            _usuarioAppService.Atualizar(usuario.Result);
             return RedirectToAction("Index", "Home");
         }
 
