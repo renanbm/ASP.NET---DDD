@@ -15,7 +15,6 @@ namespace RM.Architecture.UI.Sistema
     {
         private const string XmlSchemaString = "http://www.w3.org/2001/XMLSchema#string";
 
-        // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
             // Configure the db context, user manager and role manager to use a single instance per request
@@ -23,6 +22,7 @@ namespace RM.Architecture.UI.Sistema
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
             app.CreatePerOwinContext<ApplicationRoleManager>(ApplicationRoleManager.Create);
             app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
+
 
             // Enable the application to use a cookie to store information for the signed in user
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
@@ -64,13 +64,11 @@ namespace RM.Architecture.UI.Sistema
             app.UseTwitterAuthentication(
                 "SEU ID",
                 "SEU TOKEN");
-
-
+            
             app.UseGoogleAuthentication(
                 "SEU ID",
                 "SEU TOKEN");
-
-
+            
             var fao = new FacebookAuthenticationOptions
             {
                 AppId = "SEU ID",
@@ -89,7 +87,7 @@ namespace RM.Architecture.UI.Sistema
                         XmlSchemaString, "Facebook"));
                     foreach (var x in context.User)
                     {
-                        var claimType = string.Format("urn:facebook:{0}", x.Key);
+                        var claimType = $"urn:facebook:{x.Key}";
                         var claimValue = x.Value.ToString();
                         if (!context.Identity.HasClaim(claimType, claimValue))
                             context.Identity.AddClaim(new Claim(claimType, claimValue, XmlSchemaString, "Facebook"));

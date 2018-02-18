@@ -1,15 +1,8 @@
-﻿using System;
-
-namespace RM.Architecture.Identity.Domain.Entities
+﻿namespace RM.Architecture.Identity.Domain.Entities
 {
     public class Claims
     {
-        public Claims()
-        {
-            CodClaim = Guid.NewGuid();
-        }
-
-        public Guid CodClaim { get; }
+        public int CodClaim { get; set; }
 
         public string Nome { get; set; }
     }

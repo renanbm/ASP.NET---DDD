@@ -111,7 +111,7 @@ namespace RM.Architecture.UI.Sistema.Controllers
 
             var user = new ApplicationUser
             {
-                UserName = model.UserName,
+                UserName = model.Email,
                 Nome = model.Nome,
                 Sobrenome = model.Sobrenome,
                 Email = model.Email

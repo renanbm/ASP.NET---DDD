@@ -143,7 +143,7 @@ namespace RM.Architecture.Identity.Application.Services
 
         private async Task ResetarContadorTentativasLogin(ApplicationUser usuario)
         {
-            await _userManager.ResetAccessFailedCountAsync(usuario.CurrentClientId);
+            await _userManager.ResetAccessFailedCountAsync(usuario.Id);
         }
     }
 }

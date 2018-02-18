@@ -1,4 +1,5 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.ModelConfiguration;
 using RM.Architecture.Identity.Domain.Entities;
 
 namespace RM.Architecture.Identity.Infra.Data.EntityConfig
@@ -11,6 +12,7 @@ namespace RM.Architecture.Identity.Infra.Data.EntityConfig
 
             Property(u => u.CodClaim)
                 .IsRequired()
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity)
                 .HasColumnName("CodClaim");
 
             Property(u => u.Nome)
